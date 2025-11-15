@@ -27,6 +27,10 @@ namespace Stage.Object
 		/// 見た目のオンオフにも使用
 		/// </summary>
 		[FormerlySerializedAs("_clickConsitionList")] [SerializeField] ObjectConditionBase[] _clicktConditionList;
+		/// <summary>
+		/// 条件を満たさなくなっても見た目を残すか
+		/// </summary>
+		[SerializeField] private bool _keepVisibleWhenDisabled = false;
 
 		/// <summary>
 		/// 起動内容
@@ -67,6 +71,9 @@ namespace Stage.Object
 		/// 表示用オブジェクトを置く
 		/// </summary>
 		private Transform[] _viewObjects;
+		private bool _canInteractByCondition = true;
+		private bool _isTouchEnabled = true;
+		private bool _didOverrideButtonColor = false;
 
 		public int RoomID { get; private set; } = 0;
 
@@ -82,20 +89,57 @@ namespace Stage.Object
 			_saveDataInstance = GameManager.GetInstance().SaveManagerInstance.SaveDataInstance;
 			//子オブジェクトをすべて取得
 			_viewObjects = transform.GetComponentsInChildren<Transform>();
+			if (!_keepVisibleWhenDisabled)
+			{
+				foreach (var objectData in _objectDataList)
+				{
+					if (objectData is ObjectAssetAddFlagControl addFlag)
+					{
+						foreach (var flag in addFlag.FlagKind)
+						{
+							if (flag == SaveData.SaveFlag.STAGE_1_STEP)
+							{
+								_keepVisibleWhenDisabled = true;
+								break;
+							}
+						}
+						if (_keepVisibleWhenDisabled)
+						{
+							break;
+						}
+					}
+				}
+			}
 			var button = GetComponent<Button>();
 			if (button != null)
 			{
 				_button = button;
+				if (_keepVisibleWhenDisabled)
+				{
+					OverrideButtonDisabledColor();
+				}
 			}
 			
-			if (_button != null)
+		if (_button != null)
+		{
+			_button.onClick.AddListener(() =>
 			{
-				_button.onClick.AddListener(() =>
-				{
-					OnClick?.Invoke();
-				});
-			}
+				OnClick?.Invoke();
+			});
 		}
+	}
+
+	private void OverrideButtonDisabledColor()
+	{
+		if (_button == null || _didOverrideButtonColor)
+		{
+			return;
+		}
+		var colors = _button.colors;
+		colors.disabledColor = new Color(colors.normalColor.r, colors.normalColor.g, colors.normalColor.b, colors.normalColor.a);
+		_button.colors = colors;
+		_didOverrideButtonColor = true;
+	}
 
 		/// <summary>
 		/// 表示非表示更新 自動起動の確認
@@ -104,10 +148,16 @@ namespace Stage.Object
 		public virtual void UpdateObject()
 		{
 			//見た目のオンオフ
-			bool view = IsCondition(_clicktConditionList);
+			bool canInteract = IsCondition(_clicktConditionList);
+			_canInteractByCondition = canInteract;
+			bool shouldDisplay = canInteract || _keepVisibleWhenDisabled;
 			foreach (var objectData in _viewObjects)
 			{
-				objectData.gameObject.SetActive(view);
+				objectData.gameObject.SetActive(shouldDisplay);
+			}
+			if (_button != null)
+			{
+				_button.interactable = _isTouchEnabled && canInteract;
 			}
 		}
 
@@ -145,9 +195,10 @@ namespace Stage.Object
 		/// <param name="isActive"></param>
 		public void SettingTouch(bool isActive)
 		{
+			_isTouchEnabled = isActive;
 			if (_button != null)
 			{
-				_button.enabled = isActive;
+				_button.interactable = _isTouchEnabled && _canInteractByCondition;
 			}
 		}
 
@@ -165,7 +216,7 @@ namespace Stage.Object
                     var flagData = objectData as ObjectAssetFlagControl;
                     foreach (var flag in flagData.FlagKind)
                     {
-                        Debug.Log("フラグを設定 " + flag + " " + flagData.SetNum);
+                        //Debug.Log("フラグを設定 " + flag + " " + flagData.SetNum);
                         OnFlagChange?.Invoke(flag, flagData.SetNum);
                     }
                 }

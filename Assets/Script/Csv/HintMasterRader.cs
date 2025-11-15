@@ -25,17 +25,21 @@ namespace Csv
 		public HintMasterReader(string fileName)
 		{
 			_fileName = fileName;
-			ReadData();
 		}
 
 		/// <summary>
 		/// csvデータ読み込み
 		/// </summary>
-		private void ReadData()
+		public void Load()
 		{
-			TextAsset textCsvAsset;
-			textCsvAsset = Resources.Load(string.Format("Master/{0}", _fileName)) as TextAsset;
-			var csv = ConvertCSV(textCsvAsset.ToString());
+			HintMasterDataList.Clear();
+			var textCsvAsset = Resources.Load<TextAsset>(string.Format("Master/{0}", _fileName));
+			if (textCsvAsset == null)
+			{
+				Debug.LogError($"[HintMasterReader] Resources/Master/{_fileName} が見つかりません。");
+				return;
+			}
+			var csv = ConvertCSV(textCsvAsset.text);
 			foreach (var columns in csv)
 			{
 				string[] csvArr = columns;
@@ -57,7 +61,6 @@ namespace Csv
 				HintMasterDataList.Add(new HintMasterData(hintMsgs, answerMsgs, flag));
 			}
 
-			textCsvAsset = null;
 		}
 
 		/// <summary>

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Save;
 using UnityEngine;
 using UnityEngine.UI;
@@ -13,6 +14,13 @@ namespace UI.Room
 		[SerializeField] private Button _button;
 		[SerializeField] private GameObject _itemIcon;
 		[SerializeField] private Image _image;
+		private static readonly Dictionary<SaveData.ItemKind, string> SpriteResourceOverrides =
+			new Dictionary<SaveData.ItemKind, string>
+			{
+				{ SaveData.ItemKind.BATTERY11_1, "Sprites/電池" },
+				{ SaveData.ItemKind.BATTERY11_2, "Sprites/電池" },
+				{ SaveData.ItemKind.SCISSOR_12, "Sprites/SCISSOR" },
+			};
 
 		/// <summary>
 		/// 選択パネル
@@ -56,7 +64,17 @@ namespace UI.Room
 			//前と違う種類の時だけ切り替える
 			if (_kind != kind && kind != SaveData.ItemKind.NONE)
 			{
-				var texture = Resources.Load(kind.ToString()) as Texture2D;
+				var texturePath = $"Sprites/{kind}";
+				var texture = LoadTexture(texturePath);
+				if (texture == null && SpriteResourceOverrides.TryGetValue(kind, out var overridePath))
+				{
+					texture = LoadTexture(overridePath);
+				}
+				if (texture == null)
+				{
+					//Debug.LogError($"[ItemIconUI] Sprite resource not found for item kind {kind}. Expected a texture at Resources/{texturePath}");
+					return;
+				}
 				_image.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.zero);
 			}
 			_kind = kind;
@@ -78,6 +96,11 @@ namespace UI.Room
 		public SaveData.ItemKind GetItem()
 		{
 			return _kind;
+		}
+
+		private static Texture2D LoadTexture(string resourcePath)
+		{
+			return Resources.Load<Texture2D>(resourcePath);
 		}
 	}
 }

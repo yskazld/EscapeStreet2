@@ -14,22 +14,21 @@ public class SoundManager : MonoBehaviour
 	private AudioClip[] _audioClips;
 	private static SoundManager _main;
 
-	public enum SOUND_TYPE
-	{
-		/// <summary>
-		/// 決定
-		/// </summary>
-		Decision,
-		/// <summary>
-		/// ブザー
-		/// </summary>
-		Buzzer,
-		/// <summary>
-		/// 選択
-		/// </summary>
-		Select,
-		Num
-	}
+    public enum SOUND_TYPE
+    {
+        /// 決定
+        Decision,
+
+        /// ブザー
+        Buzzer,
+
+        /// 選択
+        Select,
+
+        /// コイン
+        Coin,
+        Num
+    }
 	public static SoundManager GetInstance()
 	{
 		return _main;

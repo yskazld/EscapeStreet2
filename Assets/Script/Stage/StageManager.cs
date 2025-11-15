@@ -42,9 +42,12 @@ namespace Stage
 		private float _firstDistance = 0f;
 		private float _moveDistance = 0f;
 		private bool _isPinch = false;
+		private readonly HashSet<SaveData.SaveFlag> _alreadyNotifiedClearFlags = new HashSet<SaveData.SaveFlag>();
+		private readonly List<SaveData.SaveFlag> _clearFlagCandidates = new List<SaveData.SaveFlag>();
 
 		private void Update()
 		{
+			CheckStageClearFlags();
 			
 			//ピンチインアウトを検知する
 			if (Input.touchCount >= 2)
@@ -88,6 +91,39 @@ namespace Stage
 			}
 		}
 
+		private void CheckStageClearFlags()
+		{
+			if (_saveData == null)
+			{
+				return;
+			}
+
+			foreach (var flag in _clearFlagCandidates)
+			{
+				if (_saveData.GetFlagNum(flag) > 0)
+				{
+					NotifyStageClear(flag);
+				}
+			}
+		}
+
+		private void HandleStage1Progress(int step)
+		{
+			const int goalStep = 4;
+			if (step < goalStep)
+			{
+				return;
+			}
+			var isAlreadyCleared = _saveData.GetFlagNum(SaveData.SaveFlag.STAGE_1_CLEAR) > 0;
+			if (isAlreadyCleared)
+			{
+				return;
+			}
+			_saveData.SetFlagNum(SaveData.SaveFlag.STAGE_1_CLEAR, 1);
+			Debug.Log($"[Stage1 Sequence] Stage 1 clear triggered. STEP={step}");
+			NotifyStageClear(SaveData.SaveFlag.STAGE_1_CLEAR);
+		}
+
 		/// <summary>
 		/// 初期化　
 		/// ステージに含まれている部屋を登録する
@@ -99,12 +135,28 @@ namespace Stage
 			//直下のルームを取得
 			var roomChildrenList = GetComponentsInChildren<RoomManager>();
 
+			_roomList.Clear();
 			foreach (var roomChild in roomChildrenList)
 			{
-				_roomList.Add(roomChild.ID,roomChild);
+				if (_roomList.TryGetValue(roomChild.ID, out var alreadyRegistered))
+				{
+					Debug.LogError($"[StageManager] Room ID {roomChild.ID} is duplicated. Existing: {alreadyRegistered.name}, Duplicate: {roomChild.name}. Please assign unique IDs.");
+					continue;
+				}
+				_roomList.Add(roomChild.ID, roomChild);
 			}
 			
 			_saveData = gameManager.SaveManagerInstance.SaveDataInstance;
+			_alreadyNotifiedClearFlags.Clear();
+
+			_clearFlagCandidates.Clear();
+			foreach (SaveData.SaveFlag flag in Enum.GetValues(typeof(SaveData.SaveFlag)))
+			{
+				if (IsClearFlag(flag))
+				{
+					_clearFlagCandidates.Add(flag);
+				}
+			}
 
 			foreach (var room in _roomList)
 			{
@@ -169,6 +221,14 @@ namespace Stage
 						{
 							Debug.Log($"[Stage1 Sequence] Flag {flag} set {before} -> {after}");
 						}
+						if (flag == SaveData.SaveFlag.STAGE11_ON_BATIN1 || flag == SaveData.SaveFlag.STAGE11_ON_BATIN2)
+						{
+							Debug.Log($"[Stage11 Battery] {flag} set {before} -> {after} (requested {value})");
+						}
+						if (after > 0 && IsClearFlag(flag))
+						{
+							NotifyStageClear(flag);
+						}
 						OnUpdateFlag?.Invoke();
 					};
 
@@ -181,6 +241,7 @@ namespace Stage
 						if (flag == SaveData.SaveFlag.STAGE_1_STEP)
 						{
 							Debug.Log($"[Stage1 Sequence] Flag {flag} add {value}. {before} -> {after}");
+							HandleStage1Progress(after);
 						}
 						OnUpdateFlag?.Invoke();
 					};
@@ -252,6 +313,45 @@ namespace Stage
 		{
 			_roomList.TryGetValue(roomID, out var result);
 			return result;
+		}
+
+		private static bool IsClearFlag(SaveData.SaveFlag flag)
+		{
+			return flag.ToString().Contains("_CLEAR");
+		}
+
+		public void ShowRoomClearPanel(int roomID, string message = null)
+		{
+			if (!_roomList.TryGetValue(roomID, out var room))
+			{
+				Debug.LogWarning($"[StageManager] Room ID {roomID} not found when trying to show clear panel.");
+				return;
+			}
+			room.ShowClearPanel(message);
+		}
+
+		public void NotifyStageClear(SaveData.SaveFlag flag, string message = null)
+		{
+			if (!IsClearFlag(flag))
+			{
+				return;
+			}
+			if (!_alreadyNotifiedClearFlags.Add(flag))
+			{
+				return;
+			}
+			ShowClearPanelForCurrentRoom(message);
+		}
+
+		private void ShowClearPanelForCurrentRoom(string message)
+		{
+			var currentRoom = GetNowRoom();
+			if (currentRoom == null)
+			{
+				Debug.LogWarning("[StageManager] Current room is not available to show clear panel.");
+				return;
+			}
+			currentRoom.ShowClearPanel(message);
 		}
 
 		/// <summary>

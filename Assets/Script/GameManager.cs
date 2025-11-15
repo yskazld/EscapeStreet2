@@ -42,6 +42,41 @@ public class GameManager : MonoBehaviour
 	
 	void Awake()
 	{
+		if (StageManagerInstance == null)
+		{
+			//優先的に子階層から探し、なければシーン全体から取得
+			StageManagerInstance = GetComponentInChildren<Stage.StageManager>();
+			if (StageManagerInstance == null)
+			{
+				StageManagerInstance = FindObjectOfType<Stage.StageManager>();
+			}
+		}
+		if (StageManagerInstance == null)
+		{
+			Debug.LogError("StageManagerInstance が見つかりません。GameManager の Inspector で割り当てるか、シーンに配置してください。");
+			return;
+		}
+
+		if (_dialogManager == null)
+		{
+			_dialogManager = FindObjectOfType<DialogManager>();
+		}
+		if (_dialogManager == null)
+		{
+			Debug.LogError("DialogManager が見つかりません。GameManager の Inspector で割り当ててください。");
+			return;
+		}
+
+		if (_roomUI == null)
+		{
+			_roomUI = FindObjectOfType<UI.Room.RoomUI>();
+		}
+		if (_roomUI == null)
+		{
+			Debug.LogError("RoomUI が見つかりません。GameManager の Inspector で割り当ててください。");
+			return;
+		}
+
 		//ダイアログの初期化
 		_dialogManager.Init();
 		//自信を格納し外部からアクセスできるようにする
@@ -61,6 +96,7 @@ public class GameManager : MonoBehaviour
 		
 		//csvを読み込み
 		_hintMasterReaderInstance = new Csv.HintMasterReader("HintMaster");
+		_hintMasterReaderInstance.Load();
 
 		
 		//ステージ初期化

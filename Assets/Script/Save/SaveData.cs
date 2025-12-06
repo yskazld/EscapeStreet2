@@ -134,6 +134,15 @@ namespace Save
             STAGE13_ON_BOX2,
             STAGE13_SEQ_STEP,
             STAGE13_NEXT_COLOR,
+            STAGE_13BOX2_SLOT_1,
+            STAGE_13BOX2_SLOT_2,
+            STAGE_13BOX2_SLOT_3,
+            STAGE_13BOX2_SLOT_4,
+            //追加
+            STAGE_1_SLOT_1,
+            STAGE_1_SLOT_2,
+            STAGE_1_SLOT_3,
+            STAGE_1_SLOT_4,
 
 
         }

@@ -54,6 +54,11 @@ namespace Stage.Object
 		public Action<int> OnEnterRoom;
 
 		/// <summary>
+		/// 遅延付きで入室する場合
+		/// </summary>
+		public Action<int, float, float> OnEnterRoomWithDelay;
+
+		/// <summary>
 		/// クリックした
 		/// </summary>
 		public Action OnClick;
@@ -236,6 +241,13 @@ namespace Stage.Object
                     var roomData = objectData as ObjectAssetEnterRoom;
                     Debug.Log("部屋移動 " + roomData.RoomID);
                     OnEnterRoom?.Invoke(roomData.RoomID);
+                }
+                else if (objectData is ObjectAssetEnterRoomTimed)
+                {
+                    //遅延付き部屋移動
+                    var roomData = objectData as ObjectAssetEnterRoomTimed;
+                    Debug.Log($"部屋移動(遅延) {roomData.RoomID} delay={roomData.DelaySeconds} move={roomData.MoveSeconds}");
+                    OnEnterRoomWithDelay?.Invoke(roomData.RoomID, roomData.DelaySeconds, roomData.MoveSeconds);
                 }
                 else if (objectData is ObjectAssetItem)
                 {

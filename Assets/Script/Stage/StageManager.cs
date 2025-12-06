@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Save;
@@ -44,6 +45,7 @@ namespace Stage
 		private bool _isPinch = false;
 		private readonly HashSet<SaveData.SaveFlag> _alreadyNotifiedClearFlags = new HashSet<SaveData.SaveFlag>();
 		private readonly List<SaveData.SaveFlag> _clearFlagCandidates = new List<SaveData.SaveFlag>();
+		private Coroutine _moveRoutine;
 
 		private void Update()
 		{
@@ -251,6 +253,10 @@ namespace Stage
 						//入室時
 						EnterRoom(id);
 					};
+					objectBase.OnEnterRoomWithDelay += (int id, float delay, float moveSeconds) =>
+					{
+						EnterRoom(id, delay, moveSeconds);
+					};
 					objectBase.OnUpdateItem += (SaveData.ItemKind kind, bool value) =>
 					{
 						//アイテム更新時
@@ -283,25 +289,25 @@ namespace Stage
 		/// </summary>
 		public void EnterRoom(int roomID)
 		{
-			//タッチを無効化
-			foreach (var room in _roomList)
+			if (_moveRoutine != null)
 			{
-				room.Value.SettingTouch(false);
-				room.Value.UpdateAllObject();
+				StopCoroutine(_moveRoutine);
+				_moveRoutine = null;
 			}
-			
-			_roomList.TryGetValue(roomID, out var targetRoom);
-			//選択中のルームのみタッチ可能
-			targetRoom.SettingTouch(true);
-			//入室
-			targetRoom.EnterRoom();
-			//入室時
-			OnEnterRoom?.Invoke(roomID);
+			EnterRoomImmediate(roomID);
+		}
 
-			Vector2 position = targetRoom.Position;
-			position.x *= -1;
-			position.y *= -1;
-			_rectTransform.localPosition = position;
+		/// <summary>
+		/// 遅延と移動時間を指定してルーム入室
+		/// </summary>
+		public void EnterRoom(int roomID, float delaySeconds, float moveSeconds)
+		{
+			if (_moveRoutine != null)
+			{
+				StopCoroutine(_moveRoutine);
+				_moveRoutine = null;
+			}
+			_moveRoutine = StartCoroutine(EnterRoomRoutine(roomID, delaySeconds, moveSeconds));
 		}
 
 		/// <summary>
@@ -402,6 +408,83 @@ namespace Stage
 			{
 				EnterRoom(backRoom.ID);
 			}
+		}
+
+		private void EnterRoomImmediate(int roomID)
+		{
+			DisableAllRoomTouches();
+			
+			if (!_roomList.TryGetValue(roomID, out var targetRoom))
+			{
+				return;
+			}
+			targetRoom.SettingTouch(true);
+			targetRoom.EnterRoom();
+			OnEnterRoom?.Invoke(roomID);
+
+			_rectTransform.localPosition = GetRoomPosition(roomID);
+		}
+
+		private IEnumerator EnterRoomRoutine(int roomID, float delaySeconds, float moveSeconds)
+		{
+			DisableAllRoomTouches();
+
+			if (!_roomList.TryGetValue(roomID, out var targetRoom))
+			{
+				_moveRoutine = null;
+				yield break;
+			}
+
+			if (delaySeconds > 0f)
+			{
+				yield return new WaitForSeconds(delaySeconds);
+			}
+
+			targetRoom.SettingTouch(true);
+			targetRoom.EnterRoom();
+			OnEnterRoom?.Invoke(roomID);
+
+			var startPos = _rectTransform.localPosition;
+			var targetPos = GetRoomPosition(roomID);
+
+			if (moveSeconds <= 0f)
+			{
+				_rectTransform.localPosition = targetPos;
+			}
+			else
+			{
+				var elapsed = 0f;
+				while (elapsed < moveSeconds)
+				{
+					elapsed += Time.deltaTime;
+					var t = Mathf.Clamp01(elapsed / moveSeconds);
+					_rectTransform.localPosition = Vector2.Lerp(startPos, targetPos, t);
+					yield return null;
+				}
+			}
+
+			_moveRoutine = null;
+		}
+
+		private void DisableAllRoomTouches()
+		{
+			foreach (var room in _roomList)
+			{
+				room.Value.SettingTouch(false);
+				room.Value.UpdateAllObject();
+			}
+		}
+
+		private Vector2 GetRoomPosition(int roomID)
+		{
+			if (!_roomList.TryGetValue(roomID, out var room))
+			{
+				return _rectTransform.localPosition;
+			}
+			Vector2 position = room.Position;
+			position.x *= -1;
+			position.y *= -1;
+			return position;
 		}
 	}
 }

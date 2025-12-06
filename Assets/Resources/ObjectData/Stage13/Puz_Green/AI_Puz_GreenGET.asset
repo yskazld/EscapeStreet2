@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d8f0c71606f6624459e3806cbc95bcf0, type: 3}
   m_Name: AI_Puz_GreenGET
   m_EditorClassIdentifier: 
-  ItemKind: 13
+  ItemKind: 16
   GetOrLose: 1

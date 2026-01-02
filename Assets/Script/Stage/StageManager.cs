@@ -24,6 +24,7 @@ namespace Stage
 		/// GameManagerから持ってきたSaveを格納
 		/// </summary>
 		private SaveData _saveData;
+		private SaveManager _saveManager;
 
 		/// <summary>
 		/// ルーム入室
@@ -148,7 +149,8 @@ namespace Stage
 				_roomList.Add(roomChild.ID, roomChild);
 			}
 			
-			_saveData = gameManager.SaveManagerInstance.SaveDataInstance;
+			_saveManager = gameManager.SaveManagerInstance;
+			_saveData = _saveManager.SaveDataInstance;
 			_alreadyNotifiedClearFlags.Clear();
 
 			_clearFlagCandidates.Clear();
@@ -231,6 +233,7 @@ namespace Stage
 						{
 							NotifyStageClear(flag);
 						}
+						_saveManager.Save();
 						OnUpdateFlag?.Invoke();
 					};
 
@@ -245,6 +248,7 @@ namespace Stage
 							Debug.Log($"[Stage1 Sequence] Flag {flag} add {value}. {before} -> {after}");
 							HandleStage1Progress(after);
 						}
+						_saveManager.Save();
 						OnUpdateFlag?.Invoke();
 					};
 
@@ -270,6 +274,7 @@ namespace Stage
 							//アイテム除去
 							_saveData.RemoveItemNum(kind);
 						}
+						_saveManager.Save();
 						OnUpdateItem?.Invoke();
 					};
 				}
@@ -471,7 +476,6 @@ namespace Stage
 			foreach (var room in _roomList)
 			{
 				room.Value.SettingTouch(false);
-				room.Value.UpdateAllObject();
 			}
 		}
 

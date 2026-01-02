@@ -91,8 +91,9 @@ namespace EditorExtensions
 			var overConditions = hasConditionFolder ? FindOverConditions(conditions) : new List<ObjectConditionBase>();
 			var resetAsset = hasConditionFolder ? FindResetAsset(conditionFolderPath) : null;
 			var addAsset = hasConditionFolder ? FindAddAsset(conditionFolderPath) : null;
+			var offClearCondition = hasConditionFolder ? FindOffClearCondition(conditionFolderPath) : null;
 			var spriteMap = BuildSpriteMap(spriteFolderPath, conditionFolderPath);
-			var hasAnyAssignments = conditionMap.Count > 0 || overConditions.Count > 0 || resetAsset != null || addAsset != null || spriteMap.Count > 0;
+			var hasAnyAssignments = conditionMap.Count > 0 || overConditions.Count > 0 || resetAsset != null || addAsset != null || spriteMap.Count > 0 || offClearCondition != null;
 			if (!hasAnyAssignments)
 			{
 				var targetDesc = hasConditionFolder && hasSpriteFolder
@@ -110,10 +111,12 @@ namespace EditorExtensions
 			int updatedAutoPlayCount = 0;
 			int updatedObjectDataCount = 0;
 			int updatedSpriteCount = 0;
+			int updatedOffClearCount = 0;
 			bool missingReset = false;
 			bool missingOver = false;
 			bool missingAddAsset = hasConditionFolder && addAsset == null;
 			bool missingSpriteComponent = false;
+			bool missingOffClear = hasConditionFolder && offClearCondition == null;
 
 			foreach (var targetObj in targets)
 			{
@@ -125,6 +128,7 @@ namespace EditorExtensions
 						overConditions,
 						resetAsset,
 						addAsset,
+						offClearCondition,
 						spriteMap,
 						visited,
 						missingKeys,
@@ -134,13 +138,14 @@ namespace EditorExtensions
 					updatedAutoPlayCount += summary.AutoPlayAssignments;
 					updatedObjectDataCount += summary.ObjectDataAssignments;
 					updatedSpriteCount += summary.SpriteAssignments;
+					updatedOffClearCount += summary.OffClearAssignments;
 					missingReset |= summary.MissingReset;
 					missingOver |= summary.MissingOver;
 					missingSpriteComponent |= summary.MissingSpriteComponent;
 				}
 			}
 
-			if (updatedSymbolCount == 0 && updatedAutoPlayCount == 0 && updatedObjectDataCount == 0 && updatedSpriteCount == 0)
+			if (updatedSymbolCount == 0 && updatedAutoPlayCount == 0 && updatedObjectDataCount == 0 && updatedSpriteCount == 0 && updatedOffClearCount == 0)
 			{
 				if (missingKeys.Count > 0)
 				{
@@ -155,7 +160,7 @@ namespace EditorExtensions
 
 			var messageLines = new List<string>
 			{
-				$"Updated {updatedSymbolCount} symbol ObjectBase(s), {updatedAutoPlayCount} AutoPlay object(s), assigned {updatedObjectDataCount} object data entry/entries, and applied {updatedSpriteCount} sprite(s)."
+				$"Updated {updatedSymbolCount} symbol ObjectBase(s), {updatedAutoPlayCount} AutoPlay object(s), assigned {updatedObjectDataCount} object data entry/entries, applied {updatedSpriteCount} sprite(s), and replaced {updatedOffClearCount} OFFCLEAR condition(s)."
 			};
 			var isWarning = false;
 
@@ -180,6 +185,12 @@ namespace EditorExtensions
 			if (missingAddAsset)
 			{
 				messageLines.Add("Add asset (name containing 'Add') not found in the selected condition folder.");
+				isWarning = true;
+			}
+
+			if (missingOffClear)
+			{
+				messageLines.Add("OFFCLEAR condition for this stage was not found in Assets/Resources/ObjectData/Clear_ON_OFF.");
 				isWarning = true;
 			}
 
@@ -255,6 +266,46 @@ namespace EditorExtensions
 				.ToList();
 		}
 
+		private static ObjectConditionBase FindOffClearCondition(string conditionFolderPath)
+		{
+			if (string.IsNullOrEmpty(conditionFolderPath))
+			{
+				return null;
+			}
+
+			var stageNumber = TryExtractStageNumber(conditionFolderPath);
+			if (!stageNumber.HasValue)
+			{
+				return null;
+			}
+
+			const string clearFolder = "Assets/Resources/ObjectData/Clear_ON_OFF";
+			if (!AssetDatabase.IsValidFolder(clearFolder))
+			{
+				return null;
+			}
+
+			var guids = AssetDatabase.FindAssets("t:ObjectConditionBase", new[] { clearFolder });
+			var stageToken = $"STAGE{stageNumber.Value}";
+			foreach (var guid in guids)
+			{
+				var path = AssetDatabase.GUIDToAssetPath(guid);
+				var asset = AssetDatabase.LoadAssetAtPath<ObjectConditionBase>(path);
+				if (asset == null)
+				{
+					continue;
+				}
+
+				var name = asset.name.ToUpperInvariant();
+				if (name.Contains(stageToken) && name.Contains("OFFCLEAR"))
+				{
+					return asset;
+				}
+			}
+
+			return null;
+		}
+
 		private static ObjectAssetBase FindResetAsset(string folderPath)
 		{
 			var guids = AssetDatabase.FindAssets(string.Empty, new[] { folderPath });
@@ -281,6 +332,32 @@ namespace EditorExtensions
 				if (asset != null && asset.name.IndexOf("Add", StringComparison.OrdinalIgnoreCase) >= 0)
 				{
 					return asset;
+				}
+			}
+
+			return null;
+		}
+
+		private static int? TryExtractStageNumber(string folderPath)
+		{
+			if (string.IsNullOrEmpty(folderPath))
+			{
+				return null;
+			}
+
+			var normalized = folderPath.Replace('\\', '/');
+			var parts = normalized.Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
+			for (int i = parts.Length - 1; i >= 0; i--)
+			{
+				var part = parts[i];
+				var stageIndex = part.IndexOf("Stage", StringComparison.OrdinalIgnoreCase);
+				if (stageIndex >= 0)
+				{
+					var digits = new string(part.Skip(stageIndex + "Stage".Length).TakeWhile(char.IsDigit).ToArray());
+					if (int.TryParse(digits, out var number))
+					{
+						return number;
+					}
 				}
 			}
 
@@ -404,6 +481,7 @@ namespace EditorExtensions
 			IReadOnlyList<ObjectConditionBase> overConditions,
 			ObjectAssetBase resetAsset,
 			ObjectAssetBase addAsset,
+			ObjectConditionBase offClearCondition,
 			IReadOnlyDictionary<string, Sprite> spriteMap,
 			ISet<ObjectBase> visited,
 			ISet<string> missingKeys,
@@ -422,9 +500,17 @@ namespace EditorExtensions
 
 				if (addAsset != null && ReferenceEquals(objectBase, root))
 				{
-					if (EnsureObjectDataContains(objectBase, addAsset))
+					if (ReplaceAddObjectData(objectBase, addAsset))
 					{
 						summary = summary.AddObjectData();
+					}
+				}
+				
+				if (offClearCondition != null)
+				{
+					if (ReplaceOffClearCondition(objectBase, offClearCondition))
+					{
+						summary = summary.AddOffClear();
 					}
 				}
 
@@ -503,7 +589,7 @@ namespace EditorExtensions
 			return true;
 		}
 
-		private static bool EnsureObjectDataContains(ObjectBase objectBase, ObjectAssetBase asset)
+		private static bool ReplaceAddObjectData(ObjectBase objectBase, ObjectAssetBase asset)
 		{
 			var so = new SerializedObject(objectBase);
 			so.Update();
@@ -514,22 +600,129 @@ namespace EditorExtensions
 				return false;
 			}
 
+			// If an Add asset already exists, replace it; otherwise append the new asset.
+			var indicesToRemove = new List<int>();
+			int? firstAddIndex = null;
 			for (int i = 0; i < listProperty.arraySize; i++)
 			{
 				if (listProperty.GetArrayElementAtIndex(i).objectReferenceValue == asset)
 				{
-					return false;
+					firstAddIndex = i;
+					continue;
+				}
+
+				if (IsAddAsset(listProperty.GetArrayElementAtIndex(i).objectReferenceValue))
+				{
+					if (firstAddIndex == null)
+					{
+						firstAddIndex = i;
+					}
+					else
+					{
+						indicesToRemove.Add(i);
+					}
 				}
 			}
 
-			Undo.RecordObject(objectBase, ObjectDataUndoLabel);
-			var newIndex = listProperty.arraySize;
-			listProperty.arraySize = newIndex + 1;
-			listProperty.GetArrayElementAtIndex(newIndex).objectReferenceValue = asset;
+			bool changed = indicesToRemove.Count > 0 || !firstAddIndex.HasValue;
+			if (firstAddIndex.HasValue && listProperty.GetArrayElementAtIndex(firstAddIndex.Value).objectReferenceValue != asset)
+			{
+				changed = true;
+			}
 
-			so.ApplyModifiedProperties();
-			EditorUtility.SetDirty(objectBase);
-			return true;
+			if (changed)
+			{
+				Undo.RecordObject(objectBase, ObjectDataUndoLabel);
+
+				// Remove extra Add entries (remove from highest index to lowest).
+				for (int i = indicesToRemove.Count - 1; i >= 0; i--)
+				{
+					listProperty.DeleteArrayElementAtIndex(indicesToRemove[i]);
+				}
+
+				if (firstAddIndex.HasValue)
+				{
+					listProperty.GetArrayElementAtIndex(firstAddIndex.Value).objectReferenceValue = asset;
+				}
+				else
+				{
+					var newIndex = listProperty.arraySize;
+					listProperty.arraySize = newIndex + 1;
+					listProperty.GetArrayElementAtIndex(newIndex).objectReferenceValue = asset;
+				}
+
+				so.ApplyModifiedProperties();
+				EditorUtility.SetDirty(objectBase);
+			}
+
+			return changed;
+		}
+
+		private static bool ReplaceOffClearCondition(ObjectBase objectBase, ObjectConditionBase offClearCondition)
+		{
+			var so = new SerializedObject(objectBase);
+			so.Update();
+
+			var listProperty = so.FindProperty("_clicktConditionList");
+			if (listProperty == null || listProperty.arraySize == 0)
+			{
+				return false;
+			}
+
+			bool replaced = false;
+			for (int i = 0; i < listProperty.arraySize; i++)
+			{
+				var element = listProperty.GetArrayElementAtIndex(i);
+				if (element == null)
+				{
+					continue;
+				}
+
+				var value = element.objectReferenceValue as ObjectConditionBase;
+				if (value == null)
+				{
+					continue;
+				}
+
+				if (IsOffClearCondition(value))
+				{
+					if (!replaced)
+					{
+						Undo.RecordObject(objectBase, ClickConditionUndoLabel);
+					}
+					element.objectReferenceValue = offClearCondition;
+					replaced = true;
+				}
+			}
+
+			if (replaced)
+			{
+				so.ApplyModifiedProperties();
+				EditorUtility.SetDirty(objectBase);
+			}
+
+			return replaced;
+		}
+
+		private static bool IsOffClearCondition(ObjectConditionBase condition)
+		{
+			if (condition == null)
+			{
+				return false;
+			}
+
+			return condition.name.IndexOf("OFFCLEAR", StringComparison.OrdinalIgnoreCase) >= 0 ||
+			       AssetDatabase.GetAssetPath(condition).IndexOf("Clear_ON_OFF", StringComparison.OrdinalIgnoreCase) >= 0;
+		}
+
+		private static bool IsAddAsset(UnityEngine.Object asset)
+		{
+			if (asset == null)
+			{
+				return false;
+			}
+
+			return asset.name.IndexOf("Add", StringComparison.OrdinalIgnoreCase) >= 0;
 		}
 
 		private static bool SetSymbolSprite(ObjectBase objectBase, Sprite sprite)
@@ -660,12 +853,13 @@ namespace EditorExtensions
 
 		private readonly struct AssignmentSummary
 		{
-			private AssignmentSummary(int symbolAssignments, int autoPlayAssignments, int objectDataAssignments, int spriteAssignments, bool missingReset, bool missingOver, bool missingSpriteComponent)
+			private AssignmentSummary(int symbolAssignments, int autoPlayAssignments, int objectDataAssignments, int spriteAssignments, int offClearAssignments, bool missingReset, bool missingOver, bool missingSpriteComponent)
 			{
 				SymbolAssignments = symbolAssignments;
 				AutoPlayAssignments = autoPlayAssignments;
 				ObjectDataAssignments = objectDataAssignments;
 				SpriteAssignments = spriteAssignments;
+				OffClearAssignments = offClearAssignments;
 				MissingReset = missingReset;
 				MissingOver = missingOver;
 				MissingSpriteComponent = missingSpriteComponent;
@@ -675,15 +869,16 @@ namespace EditorExtensions
 			public int AutoPlayAssignments { get; }
 			public int ObjectDataAssignments { get; }
 			public int SpriteAssignments { get; }
+			public int OffClearAssignments { get; }
 			public bool MissingReset { get; }
 			public bool MissingOver { get; }
 			public bool MissingSpriteComponent { get; }
 
-			public static AssignmentSummary Empty => new AssignmentSummary(0, 0, 0, 0, false, false, false);
+			public static AssignmentSummary Empty => new AssignmentSummary(0, 0, 0, 0, 0, false, false, false);
 
 			public AssignmentSummary AddSymbol()
 			{
-				return new AssignmentSummary(SymbolAssignments + 1, AutoPlayAssignments, ObjectDataAssignments, SpriteAssignments, MissingReset, MissingOver, MissingSpriteComponent);
+				return new AssignmentSummary(SymbolAssignments + 1, AutoPlayAssignments, ObjectDataAssignments, SpriteAssignments, OffClearAssignments, MissingReset, MissingOver, MissingSpriteComponent);
 			}
 
 			public AssignmentSummary AddAutoPlay(bool missingReset, bool missingOver)
@@ -693,6 +888,7 @@ namespace EditorExtensions
 					AutoPlayAssignments + 1,
 					ObjectDataAssignments,
 					SpriteAssignments,
+					OffClearAssignments,
 					MissingReset || missingReset,
 					MissingOver || missingOver,
 					MissingSpriteComponent);
@@ -705,6 +901,7 @@ namespace EditorExtensions
 					AutoPlayAssignments,
 					ObjectDataAssignments + 1,
 					SpriteAssignments,
+					OffClearAssignments,
 					MissingReset,
 					MissingOver,
 					MissingSpriteComponent);
@@ -712,7 +909,12 @@ namespace EditorExtensions
 
 			public AssignmentSummary AddSprite()
 			{
-				return new AssignmentSummary(SymbolAssignments, AutoPlayAssignments, ObjectDataAssignments, SpriteAssignments + 1, MissingReset, MissingOver, MissingSpriteComponent);
+				return new AssignmentSummary(SymbolAssignments, AutoPlayAssignments, ObjectDataAssignments, SpriteAssignments + 1, OffClearAssignments, MissingReset, MissingOver, MissingSpriteComponent);
+			}
+
+			public AssignmentSummary AddOffClear()
+			{
+				return new AssignmentSummary(SymbolAssignments, AutoPlayAssignments, ObjectDataAssignments, SpriteAssignments, OffClearAssignments + 1, MissingReset, MissingOver, MissingSpriteComponent);
 			}
 
 			public AssignmentSummary WithMissingFlags(bool missingReset, bool missingOver)
@@ -722,6 +924,7 @@ namespace EditorExtensions
 					AutoPlayAssignments,
 					ObjectDataAssignments,
 					SpriteAssignments,
+					OffClearAssignments,
 					MissingReset || missingReset,
 					MissingOver || missingOver,
 					MissingSpriteComponent);
@@ -734,6 +937,7 @@ namespace EditorExtensions
 					AutoPlayAssignments,
 					ObjectDataAssignments,
 					SpriteAssignments,
+					OffClearAssignments,
 					MissingReset,
 					MissingOver,
 					true);

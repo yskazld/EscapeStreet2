@@ -212,6 +212,12 @@ namespace Stage.Object
 		/// </summary>
 		protected void PlayAction()
 		{
+            if (_objectDataList == null)
+            {
+                Debug.LogWarning($"[ObjectBase] _objectDataList is null on {name}. Skip PlayAction.");
+                return;
+            }
+
             //起動内容実行
             foreach (var objectData in _objectDataList)
             {
@@ -264,14 +270,30 @@ namespace Stage.Object
                 {
                     //サウンドを鳴らす
                     var sound = objectData as ObjectAssetSound;
-                    SoundManager.GetInstance().Play(sound.Sound);
+                    var soundManager = SoundManager.GetInstance();
+                    if (soundManager != null)
+                    {
+                        soundManager.Play(sound.Sound);
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"[ObjectBase] SoundManager is not ready. Skip playing sound on {name} (RoomID={RoomID}).");
+                    }
                 }
                 else if (objectData is ObjectAssetSound_test)
                 {
                     //サウンドを鳴らす
                     var flagData = objectData as ObjectAssetSound_test;
                     // SoundManager.GetInstance().Play(sound.Sound_test);
-                    SoundManager.GetInstance().Play(flagData.Sound_test);
+                    var soundManager = SoundManager.GetInstance();
+                    if (soundManager != null)
+                    {
+                        soundManager.Play(flagData.Sound_test);
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"[ObjectBase] SoundManager is not ready. Skip playing sound on {name} (RoomID={RoomID}).");
+                    }
                 }
             }
 		}

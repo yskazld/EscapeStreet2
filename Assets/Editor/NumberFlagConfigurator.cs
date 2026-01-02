@@ -175,6 +175,12 @@ public static class NumberFlagConfigurator
 		bool didChange = false;
 		var serializedObject = new SerializedObject(autoPlay);
 
+		if (assets.PassResetAsset == null || assets.OverConditionAsset == null)
+		{
+			Debug.LogWarning($"[Number Flag Setup] {contextName}: AutoReset に必要なアセット(PassReset/OverCondition)が不足しているためスキップします。");
+			return false;
+		}
+
 		var objectDataList = serializedObject.FindProperty("_objectDataList");
 		if (objectDataList != null &&
 		    (objectDataList.arraySize != 1 || objectDataList.GetArrayElementAtIndex(0).objectReferenceValue != assets.PassResetAsset))
@@ -213,6 +219,12 @@ public static class NumberFlagConfigurator
 		if (buttonBase == null)
 		{
 			Debug.LogWarning($"[Number Flag Setup] {contextName}: ButtonBase に ObjectBase が見つかりません。");
+			return false;
+		}
+
+		if (assets.PassAddAsset == null)
+		{
+			Debug.LogWarning($"[Number Flag Setup] {contextName}: Pass_Add アセットが不足しているためスキップします。");
 			return false;
 		}
 
@@ -297,17 +309,22 @@ public static class NumberFlagConfigurator
 		var passReset = AssetDatabase.LoadAssetAtPath<ObjectAssetFlagControl>(Path.Combine(flagFolderPath, $"Pass{buttonIndex} 0.asset"));
 		var passAdd = AssetDatabase.LoadAssetAtPath<ObjectAssetAddFlagControl>(Path.Combine(flagFolderPath, $"Pass{buttonIndex}_Add.asset"));
 
-		if (overAssets.Length == 0 || passReset == null || passAdd == null)
-		{
-			EditorUtility.DisplayDialog("Number Flag Setup",
-				$"{contextName} のフォルダに必要なアセットが不足しています。\nOver系(Over_Pass{buttonIndex}-9 など)、Pass{buttonIndex} 0.asset、Pass{buttonIndex}_Add.asset を確認してください。",
-				"OK");
-			return false;
-		}
-
 		assets.PassResetAsset = passReset;
 		assets.PassAddAsset = passAdd;
-		assets.OverConditionAsset = overAssets.First();
+		assets.OverConditionAsset = overAssets.FirstOrDefault();
+
+		if (overAssets.Length == 0)
+		{
+			Debug.LogWarning($"[Number Flag Setup] {contextName}: Over 系 ConditionFlag が見つかりません。必要なら追加してください。");
+		}
+		if (passReset == null)
+		{
+			Debug.LogWarning($"[Number Flag Setup] {contextName}: Pass{buttonIndex} 0.asset が見つかりません。必要なら追加してください。");
+		}
+		if (passAdd == null)
+		{
+			Debug.LogWarning($"[Number Flag Setup] {contextName}: Pass{buttonIndex}_Add.asset が見つかりません。必要なら追加してください。");
+		}
 
 		foreach (var condition in conditionAssets)
 		{

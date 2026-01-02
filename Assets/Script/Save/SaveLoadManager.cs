@@ -46,6 +46,8 @@ namespace Save
 		{
 			var saveBinary = SerializeConverter.ConvertClassToBinaryData(SaveDataInstance);
 			PlayerPrefs.SetString(GetNowSaveKey(), saveBinary);
+			// PlayerPrefs は即座に書き出さないため強制保存する
+			PlayerPrefs.Save();
 		}
 
 		/// <summary>

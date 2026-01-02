@@ -17,9 +17,14 @@ namespace UI.Room
 		private static readonly Dictionary<SaveData.ItemKind, string> SpriteResourceOverrides =
 			new Dictionary<SaveData.ItemKind, string>
 			{
-				{ SaveData.ItemKind.BATTERY11_1, "Sprites/電池" },
-				{ SaveData.ItemKind.BATTERY11_2, "Sprites/電池" },
-				{ SaveData.ItemKind.SCISSOR_12, "Sprites/SCISSOR" },
+				{ SaveData.ItemKind.KEY_4, "Sprite/KEY_4" },
+				{ SaveData.ItemKind.KEY9, "Sprite/KEY_9" },
+				{ SaveData.ItemKind.BATTERY11_1, "Sprite/電池" },
+				{ SaveData.ItemKind.BATTERY11_2, "Sprite/電池" },
+				{ SaveData.ItemKind.SCISSOR_12, "Sprite/SCISSOR" },
+				{ SaveData.ItemKind.STAGE7_ON_EYE_ROBOT1, "Sprite/Eye_Robot" },
+				{ SaveData.ItemKind.STAGE7_ON_EYE_ROBOT2, "Sprite/Eye_Robot" },
+				{ SaveData.ItemKind.DOORKNOB9, "Sprite/9_Doorknob" },
 			};
 
 		/// <summary>
@@ -64,7 +69,7 @@ namespace UI.Room
 			//前と違う種類の時だけ切り替える
 			if (_kind != kind && kind != SaveData.ItemKind.NONE)
 			{
-				var texturePath = $"Sprites/{kind}";
+				var texturePath = $"Sprite/{kind}";
 				var texture = LoadTexture(texturePath);
 				if (texture == null && SpriteResourceOverrides.TryGetValue(kind, out var overridePath))
 				{
@@ -72,7 +77,6 @@ namespace UI.Room
 				}
 				if (texture == null)
 				{
-					//Debug.LogError($"[ItemIconUI] Sprite resource not found for item kind {kind}. Expected a texture at Resources/{texturePath}");
 					return;
 				}
 				_image.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.zero);

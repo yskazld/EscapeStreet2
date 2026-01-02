@@ -60,10 +60,10 @@ namespace Save
             STAGE_4_SLOT_1,
             STAGE_4_SLOT_2,
             STAGE_4_SLOT_3,
-            STAGE5_PASS1,
-            STAGE5_PASS2,
-            STAGE5_PASS3,
-            STAGE5_PASS4,
+            STAGE5_COLOR1,
+            STAGE5_COLOR2,
+            STAGE5_COLOR3,
+            STAGE5_COLOR4,
             STAGE_6_SLOT_1,
             STAGE_6_SLOT_2,
             STAGE_6_SLOT_3,
@@ -143,6 +143,61 @@ namespace Save
             STAGE_1_SLOT_2,
             STAGE_1_SLOT_3,
             STAGE_1_SLOT_4,
+            STAGE_4_Tana,
+            STAGE4_ON_KEY,
+            STAGE_4_SLOT_4,
+            STAGE5_COLOR5,
+            STAGE5_COLOR6,
+            STAGE5_COLOR7,
+            STAGE5_COLOR8,
+            STAGE5_COLOR9,
+            STAGE5_ALFABET1,
+            STAGE5_ALFABET2,
+            STAGE5_ALFABET3,
+            STAGE5_ALFABET4,
+            STAGE5_ALFABET5,
+            STAGE5_ALFABET6,
+            STAGE_5_Door, 
+            STAGE_6_CURTAIN,
+            STAGE_6_SLOT_5,
+            STAGE_6_NUMBUT_1,
+            STAGE_6_NUMBUT_2,
+            STAGE_6_NUMBUT_3,
+            STAGE_6_NUMBUT_4,
+            STAGE_6_NUMBUT_5,
+            STAGE7_SEQ_STEP,
+            STAGE7_NEXT_COLOR,
+            STAGE7_ON_EYE_ROBOT1,
+            STAGE7_ON_EYE_ROBOT2, 
+            STAGE7_APPEAR_EYE_ROBOT1,
+            STAGE7_APPEAR_EYE_ROBOT2,
+            STAGE_7_SLOT_5,
+            STAGE7_ON_EYE1_IN,
+            STAGE7_ON_EYE2_IN,
+            STAGE8_APPEAR_COIN, 
+            STAGE_8_SLOT_1_Doll,
+            STAGE_8_SLOT_2_Doll,
+            STAGE_8_SLOT_3_Doll,
+            STAGE_8_SLOT_4_Doll,
+            STAGE_8_SLOT_5_Doll,
+            STAGE_8_SLOT_6_Doll,
+            STAGE_8_SLOT_7_Doll,
+            STAGE9_PASS6,
+            STAGE9_DOORKNOB,
+            STAGE9_ON_DOORKNOBIN,
+            STAGE9_APPEAR_KEY,
+            STAGE9_SLOT1_BOOTS,
+            STAGE9_SLOT2_BOOTS,
+            STAGE9_SLOT3_BOOTS,
+            STAGE9_SLOT4_BOOTS,
+            STAGE9_SLOT5_BOOTS,
+
+            STAGE10_SLOT1_FASHION,
+            STAGE10_SLOT2_FASHION,
+            STAGE10_SLOT3_FASHION,
+            STAGE10_SLOT4_FASHION,
+            STAGE10_ON_HIKIDASHI,
+
 
 
         }
@@ -170,14 +225,20 @@ namespace Save
             SCISSOR_12,
             PUZRED13,
             PUZGREEN13,
+            STAGE7_ON_EYE_ROBOT1,
+            STAGE7_ON_EYE_ROBOT2,
+            DOORKNOB9,
+
+
+
 
 
         }
 
-		/// <summary>
-		/// 言語種類
-		/// </summary>
-		public enum LANGUAGE
+        /// <summary>
+        /// 言語種類
+        /// </summary>
+        public enum LANGUAGE
 		{
 			JAPAN,
 			ENGLISH

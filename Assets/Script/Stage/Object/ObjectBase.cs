@@ -315,7 +315,6 @@ namespace Stage.Object
 					var comparison = conditionFlag.Comparison;
 					var flagNum = _saveDataInstance.GetFlagNum(conditionFlag.FlagKind);
 					var comparisonNum = conditionFlag.Num;
-					//Debug.Log("フラグを判定 " +conditionFlag.FlagKind);
 					switch (comparison)
 					{
 						case ObjectConditionBase.COMPARISON.EQUAL:
@@ -333,14 +332,12 @@ namespace Stage.Object
 				else if (conditionData is ObjectConditionItem)
 				{
 					var conditionItem = conditionData as ObjectConditionItem;
-					//Debug.Log("アイテムを判定 " +conditionItem.ItemKind);
 					isOk = _saveDataInstance.GetItemNum().Exists(x => x == conditionItem.ItemKind);
 				}
 				//選択アイテムを検査
 				else if (conditionData is ObjectConditionItemSelect)
 				{
 					var conditionItemSelect = conditionData as ObjectConditionItemSelect;
-					//Debug.Log("アイテムを選択中 " + conditionItemSelect.ItemKind);
 					isOk = RoomUI.Instance.IsUseItem(conditionItemSelect.ItemKind);
 				}
 				//条件が合わなかった

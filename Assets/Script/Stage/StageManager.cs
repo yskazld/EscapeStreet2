@@ -47,11 +47,12 @@ namespace Stage
 		private readonly HashSet<SaveData.SaveFlag> _alreadyNotifiedClearFlags = new HashSet<SaveData.SaveFlag>();
 		private readonly List<SaveData.SaveFlag> _clearFlagCandidates = new List<SaveData.SaveFlag>();
 		private Coroutine _moveRoutine;
+		private bool _inputEnabled = true;
 
 		private void Update()
 		{
 			CheckStageClearFlags();
-			
+
 			//ピンチインアウトを検知する
 			if (Input.touchCount >= 2)
 			{
@@ -70,10 +71,15 @@ namespace Stage
 					}
 					//動かしている
 					_moveDistance = Vector2.Distance(touch1.position, touch2.position);
+					var currentRoom = GetNowRoom();
+					if (currentRoom == null)
+					{
+						return;
+					}
 					if(_moveDistance - 300 > _firstDistance)
 					{
 						//ピンチアウト
-						var room = GetNowRoom().PinchOutRoom;
+						var room = currentRoom.PinchOutRoom;
 						if (room != null)
 						{
 							EnterRoom(room.ID);
@@ -83,7 +89,7 @@ namespace Stage
 					else if (_moveDistance  < _firstDistance - 300)
 					{
 						//ピンチイン
-						var room = GetNowRoom().PinchInRoom;
+						var room = currentRoom.PinchInRoom;
 						if (room != null)
 						{
 							EnterRoom(room.ID);
@@ -176,7 +182,12 @@ namespace Stage
 					{
 						return;
 					}
-					var isCurrentRoom = objectBase.RoomID == GetNowRoom().ID;
+					var currentRoom = GetNowRoom();
+					if (currentRoom == null)
+					{
+						return;
+					}
+					var isCurrentRoom = objectBase.RoomID == currentRoom.ID;
 					if (!isCurrentRoom)
 					{
 						return;
@@ -303,6 +314,26 @@ namespace Stage
 		}
 
 		/// <summary>
+		/// ステージ全体の入力を有効/無効にする
+		/// </summary>
+		/// <param name="isEnabled"></param>
+		public void SetInputEnabled(bool isEnabled)
+		{
+			_inputEnabled = isEnabled;
+			if (!_inputEnabled)
+			{
+				DisableAllRoomTouches();
+				return;
+			}
+
+			var currentRoom = GetNowRoom();
+			if (currentRoom != null)
+			{
+				currentRoom.SettingTouch(true);
+			}
+		}
+
+		/// <summary>
 		/// 遅延と移動時間を指定してルーム入室
 		/// </summary>
 		public void EnterRoom(int roomID, float delaySeconds, float moveSeconds)
@@ -371,6 +402,11 @@ namespace Stage
 		/// <returns></returns>
 		private RoomManager GetNowRoom()
 		{
+			if (_saveData == null)
+			{
+				Debug.LogWarning("[StageManager] SaveData is not initialized.");
+				return null;
+			}
 			_roomList.TryGetValue(_saveData.GetNowRoom(), out var result);
 			return result;
 		}
@@ -381,7 +417,12 @@ namespace Stage
 		/// <returns></returns>
 		public void MoveRight()
 		{
-			var rightRoom = GetNowRoom()._rightRoom;
+			var currentRoom = GetNowRoom();
+			if (currentRoom == null)
+			{
+				return;
+			}
+			var rightRoom = currentRoom._rightRoom;
 			if (rightRoom != null)
 			{
 				EnterRoom(rightRoom.ID);
@@ -394,7 +435,12 @@ namespace Stage
 		/// <returns></returns>
 		public void MoveLeft()
 		{
-			var leftRoom = GetNowRoom()._leftRoom;
+			var currentRoom = GetNowRoom();
+			if (currentRoom == null)
+			{
+				return;
+			}
+			var leftRoom = currentRoom._leftRoom;
 			if (leftRoom != null)
 			{
 				EnterRoom(leftRoom.ID);
@@ -408,7 +454,12 @@ namespace Stage
 		/// <returns></returns>
 		public void MoveBack()
 		{
-			var backRoom = GetNowRoom()._backRoom;
+			var currentRoom = GetNowRoom();
+			if (currentRoom == null)
+			{
+				return;
+			}
+			var backRoom = currentRoom._backRoom;
 			if (backRoom != null)
 			{
 				EnterRoom(backRoom.ID);
@@ -423,7 +474,7 @@ namespace Stage
 			{
 				return;
 			}
-			targetRoom.SettingTouch(true);
+			targetRoom.SettingTouch(_inputEnabled);
 			targetRoom.EnterRoom();
 			OnEnterRoom?.Invoke(roomID);
 
@@ -445,7 +496,7 @@ namespace Stage
 				yield return new WaitForSeconds(delaySeconds);
 			}
 
-			targetRoom.SettingTouch(true);
+			targetRoom.SettingTouch(_inputEnabled);
 			targetRoom.EnterRoom();
 			OnEnterRoom?.Invoke(roomID);
 

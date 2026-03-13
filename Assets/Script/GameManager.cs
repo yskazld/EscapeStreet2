@@ -95,7 +95,7 @@ public class GameManager : MonoBehaviour
 		ItemAssetsDataBaseInstance.Init();
 		
 		//csvを読み込み
-		_hintMasterReaderInstance = new Csv.HintMasterReader("HintMaster");
+		_hintMasterReaderInstance = new Csv.HintMasterReader("HintMaster_Street");
 		_hintMasterReaderInstance.Load();
 
 		

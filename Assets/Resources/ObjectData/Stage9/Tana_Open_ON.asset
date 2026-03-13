@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 32beb6f6e804a684d8915ca75aab468d, type: 3}
   m_Name: Tana_Open_ON
   m_EditorClassIdentifier: Assembly-CSharp::ObjectAssets.Condition.ObjectConditionFlag
-  FlagKind: 156
+  FlagKind: 166
   Comparison: 0
   Num: 1

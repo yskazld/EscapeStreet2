@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: af67ccff6888f214dbf39ac928d7b993, type: 3}
   m_Name: Tana_Open_Set
   m_EditorClassIdentifier: Assembly-CSharp::ObjectAssets.ObjectAssetFlagControl
-  FlagKind: 9c000000
+  FlagKind: a6000000
   SetNum: 1

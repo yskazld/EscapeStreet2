@@ -184,7 +184,7 @@ namespace Save
             STAGE_8_SLOT_7_Doll,
             STAGE9_PASS6,
             STAGE9_DOORKNOB,
-            STAGE9_ON_DOORKNOBIN,
+            STAGE9_ON_TANA_OPEN,
             STAGE9_APPEAR_KEY,
             STAGE9_SLOT1_BOOTS,
             STAGE9_SLOT2_BOOTS,
@@ -204,14 +204,35 @@ namespace Save
             STAGE10_SLOT4_ALFABET,
             STAGE10_SLOT5_ALFABET,
             STAGE10_SLOT6_ALFABET,
-            STAGE11_ON_CURTAIN,
+            STAGE10_ON_CURTAIN,
             STAGE11_ON_ARROW1, 
             STAGE11_ON_ARROW2,
             STAGE11_ON_ARROW3,
             STAGE11_ON_ARROW4,
+            STAGE12_ON_FOUNTAIN,
+            STAGE12_ON_ARROW1,
+            STAGE12_ON_ARROW2,
+            STAGE12_ON_ARROW3,
+            STAGE12_ON_ARROW4,
+            STAGE12_ON_ARROW5,
+            STAGE13_SLOT1_TRUMP,
+            STAGE13_SLOT2_TRUMP,
+            STAGE13_SLOT3_TRUMP,
+            STAGE13_SLOT4_TRUMP,
+            STAGE13_ON_DOLL,
+            STAGE13_SLOT1_TUTA,
+            STAGE13_SLOT2_TUTA,
+            STAGE13_SLOT3_TUTA,
+            STAGE13_SLOT4_TUTA,
+            STAGE13_ON_TUTA_TOWEL,
+            STAGE4_ON_4_KEY,
 
+            INTRO_SEQUENCE_DONE,
+            RETURNING_DIALOG_SHOWN,
+            STAGE4_KEY4_TUTORIAL_SHOWN,
+            ENDING_SEQUENCE_DONE,
 
-
+            STAGE11_ON_CURTAIN,
 
 
         }
@@ -242,6 +263,7 @@ namespace Save
             STAGE7_ON_EYE_ROBOT1,
             STAGE7_ON_EYE_ROBOT2,
             DOORKNOB9,
+            STAGE_4_KEY,
 
 
 

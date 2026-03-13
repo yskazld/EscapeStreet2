@@ -14,6 +14,7 @@ namespace UI.Dialog
 		private static DialogManager _instance;
 		private List<DialogBase> _dialogList = new List<DialogBase>();
 		[SerializeField] private DialogBase _originalDialogBase;
+		[SerializeField] private DialogBase _originalHintDialogBase;
 		[SerializeField] private ItemDialog _originalItemDialog;
 		[SerializeField] private YesNoDialog _originalYesNoDialogBase;
 		
@@ -38,6 +39,33 @@ namespace UI.Dialog
 		public DialogBase CreateDialog(string text)
 		{
 			DialogBase dialog = Instantiate(_originalDialogBase, this.transform, true);
+			dialog.SetText(text);
+			var transform1 = dialog.transform.transform;
+			transform1.localPosition = new Vector3(0, 0, 0);
+			transform1.localScale = new Vector3(1, 1, 1);
+			dialog.gameObject.SetActive(true);
+			AddDialog(dialog);
+			return dialog;
+		}
+
+		/// <summary>
+		/// ヒント用ダイアログを生み出す
+		/// </summary>
+		/// <param name="text"></param>
+		/// <returns></returns>
+		public DialogBase CreateHintDialog(string text)
+		{
+			var source = _originalHintDialogBase;
+			if (source == null)
+			{
+				source = Resources.Load<DialogBase>("UI/DialogBaseHint");
+			}
+			if (source == null)
+			{
+				source = _originalDialogBase;
+			}
+
+			DialogBase dialog = Instantiate(source, this.transform, true);
 			dialog.SetText(text);
 			var transform1 = dialog.transform.transform;
 			transform1.localPosition = new Vector3(0, 0, 0);

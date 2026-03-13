@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: af67ccff6888f214dbf39ac928d7b993, type: 3}
   m_Name: Curtain_Set
   m_EditorClassIdentifier: Assembly-CSharp::ObjectAssets.ObjectAssetFlagControl
-  FlagKind: b8000000
+  FlagKind: d2000000
   SetNum: 1

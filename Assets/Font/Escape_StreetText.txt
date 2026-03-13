@@ -1,329 +1,86 @@
-鉢植え
+
+ !&'(),-./0123456789:=>?ABCDEFGHIJKLMNOPRSTUVWYZ[]_abcdefghijklmnopqrstuvwxyz{|}…　、。
+ 「」あいうえおかがきぎくけこさしじすずせそただっつてでとどなにねのはばひびへべほまみむめもやよらりるれろわをん
+ アィイクグサシズタダッテトドナネバパヒフブプボムラリルロンー
+ 中了今仕代件何値入冗出利割加動印取各合商囲在報場増変外夜大失字存完定室対少
+ 屋帰店延当得情慣戻所扉択押拡換敗数文方日明普景本条来板気池減濃物用画登看矢移端絶置
+ 脱色街表複見解言設試読調談謎象買起込通進遅道違遠選部配重録開雰電霧面音頼鳴﻿！：？
+ 鉢合計
+ 始めから、続きから、他
+ 開発者の他のゲーム
+ どこかに鍵が現れた！！
 
 
-合計は？
-１２３４５６７８９０
-開発者の
-他のゲーム
-／零
-操作方法は、、、
-カーソルの位置も逆転するよ・・・・
+"おかあさんに頼まれて、商店街へ買い物に来た。",
+"いつも通りの、見慣れた景色のはずだったけど、なにか変だ！",
+"いや、気にしても仕方がない！今日は日本代表の試合があるんだ。夜までには、絶対帰らないと！"
+"……あれ？なんだか、霧が出てきた？");
+"……ここは……？さっきまでと、雰囲気が違う……");
+"霧が濃くて、遠くがよく見えない……");
+"……こんな看板、あったっけ？");
+"看板の文字：",
+"「脱出したければ、各店の謎を解いてみろ！！」"
+"脱出……？冗談、だよね……？", 2f);
+"……でも、戻り道が見えない。仕方ない、進むしかなさそうだ。");
+"本屋だけ、扉が開いてる……とりあえず、入ってみよう。");
+"……中は普通の本屋みたいだ。");
+"画面の端に矢印があるな。押すと、部屋を移動できそうだ。");
+"なるほど、場所が変わった。", 2f);
+"気になるところをタップすると、拡大できるみたいだ。");
+"これでじっくり調べられるな！");
+"ボタンがある……押したら、何か起こるかも？");
+"よし、扉が開いた！少しずつ進めば、外に出られるかもしれない。",
+"今日は日本代表の試合があるんだ。夜までには、絶対帰らないと！"
+よし戻ってきた！！\nこれからまた謎解き開始だ！\n早く家に帰らないと！！
 
-あなたは混乱せずに
-プレイできるかな？？？
+”どうやら、いたるところにアイテムがあるらしい！”
+”アイテムを使う時は、画面したのアイテム画像をクリックして枠が赤くなったら、使いたい場所をクリックすると使えそうだ！”
+”この鍵をどこかで使えばいいのかな？”
 
-前
+……これで最後のはず！
+"やっと……出られた！！"
+時計を見て……まだ17:30だ！
+今から帰れば、サッカーの試合間に合う！！
+霧なんて、もうこりごりだ……！
+日本代表戦、間に合う！今日は勝つぞ！！
+帰ったら、おかあさんにも不思議な体験を説明しないと……！
 
-(1)遊び方
-
-ブロックを投入したり、
-一列消すとスコアアップだ！
-ハイスコア目指して頑張ろう！
-規定
-最終
-
-遊び方
-を閉じる
-
-
-HOLDボタン
-＞ブロック保持
-
-＞瞬間落下
-
-＞ブロック移動
-
-通信エラー！広告なしで
-特典が利用できます！
-やったねラッキー！
-
-〜重力を裏切る新時代知的パズル〜
-
-※ブロックの隙間を埋めます
-モサムリシタ伯爵
-
-ニオシーカ星人
-ルナ姫
-かのライバル達
-８．８　．
-
-重力回転
-下向きに落としてね"
-上下左右
-〇〇°回転！！
-ブロック種類：〇〇種
-ステージ選択
-上下左右
-条件
-列
-消去
-
-深淵なる間
-明日
-制限
-探す
-妖精の住む森を進むイメージ
-静かな草原
-霧
-神秘な洞窟
-中世のお城
-仄暗い神殿
-
-秘密
-特別
-(3)各ステージにある秘密のアイテムをゲットすると、いいことがあるかも・・・・
-集めた
-
-解放
-
-←ゲームの説明はこちら
-BGM設定
-森林
-草原
-雲
-玩具
-洞窟
-砂漠
-古城
-月面
-時計部屋
+広告を見るとヒントまたは答えががみれます
 
 
-キノコ
-碧の星
-人魚の宝石
-コンパス
-宝箱
-テント
-虹のオパール
-ルーン
-リュート
-龍の彫刻
-テディベア
-キャンディ
-おもちゃの兵隊
-汽車
-ペガサスの彫刻
-黄金のマスク
-死者の十字架
-古代の石板
-ウード
-魔法のじゅうたん
-ピラミッド
-涙の結晶
-サファイア
-ルビー
-エメラルド
-ダイアモンド
-自然の結晶
-アメジスト
-王室へのカギ
-隠し部屋の地図
-青い羽根
-ベネチアンマスク
-王冠
-戦士の鎧
-鉄の処女
-中世の剣
-黒曜石
-二億光年の星
-月の石
-カオスクリスタル
-スフィア
-流星のカケラ
-アイスジュエル
-宇宙ロケット
-最後の鐘
-最後の時計
-埋蔵金の巻物
-コハク
-何かの部品
-歴史書
-シャンデリア
-歴史を守った縦
-始まりの大時計
-ハープ
-二十面ダイス
-光る木の実
-真珠のネックレス
-四葉のクローバー
-虹のカケラ
-ゼンマイの兵隊
-小さなオアシス
-七色に輝く結晶
-王の紋章の指輪
-宇宙飛行士の記録装置
-宇宙航海ログ
-黄金の砂時計
-時計職人の手記
-海賊王のドクロ
-子
-丑
-寅
-卯
-辰
-巳
-午
-未
-申
-酉
-戌
-亥
-
-
-
-古の森の精霊が宿る実を見つけた！
-海底に眠っていた人魚の宝物を手に入れた！
-幸運の兆しがここに！見つけた君に祝福を！
-空にしか現れない幻の虹のかけらを発見！
-おもちゃの国の守り人が、君を歓迎している！
-砂漠にひっそりと眠る命の源を見つけた！
-幻のクリスタルに触れた…その輝き、永遠に。
-かつての王が遺した誓いの証を発見した！
-ここに来た誰かの声が、静かに響いている…
-止まっていた時間が、今動き出す…！
-かつて海の支配者の遺産がここに姿を現した！
-
-途中
-
-SAVE設定
-
-神龍
-
-(20秒間)
-
-可能
-
-本当にタイトルへ戻りますか？
-進行中の内容は保存されません。
-
-
-(3) 進化はこれで確認！
-太陽神ラー
-
-君はコンプできるか！！！
-第一段階
-二、三、四
-召喚
-
-進化一覧表
-
-難易度選択
-
-レーダー光線で
-狙いを定めよう！！
-
-右上に次にドロップする
-アイコンが示されるよ！！
-
-レベル６未満アイコンを〇〇個削除しました
-(１）アイコンをドロップしよう！
-　水色の線、茶色の線の内側でクリックしてね！
-困った時
-
-BGM変更
-アイテムを使用しますか？
-アイテムの個数が０です
-
-最初から
-アイテムの補充はこちらから
-
-不要な干支アイコンを1つ削除できます
-指定した干支アイコンを出現させます
-GameOverラインが一時的に上昇します
-
-
-アイテムを獲得！
-タイトル画面の「つづきから」
-を押して再開してください
-続きから
-🧹 
-コインを使って購入しますか？
-
-コインが足りません！
-ｱｲﾃﾑ
-：
-本当に購入しますか？
-
-もう一回挑戦だ！
-
-１２３４５６７８９０
-広告を見て
-アイテムをゲット！
-＊リトライ＊
-
-アイテム購入画面
-セーブしました。
-再開する時は、タイトル画面の「つづきから
-を押してください
-
-
-ステージ選択
-背景選択
-
-リトライタイトルへ戻る
-幻獣神UMA進化発生大連鎖戻次進化楽
-あいうえおかきくけこさしすせそたちつてとなにぬねのはひふへほ
-まみむめもやゆよらりるれろわをん
-がぎぐげござじずぜぞだぢづでどばびぶべぼぱぴぷぺぽ
-ぁぃぅぇぉっゃゅょゎ
-ー゛゜
-
-アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホ
-マミムメモヤユヨラリルレロワヲン
-ガギグゲゴザジズゼゾダヂヅデドバビブベボパピプペポ
-ァィゥェォッャュョヮ
-ー゛゜
-_
-
-
-Googleトレンドで検索件数多いもの
-（エイリアン基準）
-エイリアン　UMA
-フェニックス　鳥
-ユニコーン、馬
-バク、　　カバ
-ドラゴン、　竜
-バジリスク　蛇
-（カーバンクル基準）
-カーバンクル  妖精
-ネッシー、　恐竜　UMA
-ケルベロス、　犬
-クラーケン、　イカ
-
-キマイラ、　ライオン
-（ミノタウロス、　牛）
-（スフィンクス、　寅）
-ケンタウロス、　牛
-ガルーダ、　　鳥
-ワイバーン、　翼竜
-ラマンダー　トカゲ
-（好み）
-テュポーン　巨人　神
-アマビエ　UMA
-チュパカブラ　UMA
-ヴァンパイア　吸血
-カッパ
-
-神様はパッとみて分かりずらいので却下
-アマテラス　神　
-ツクヨミ、　神
-オーディン、　神
-ラー、　神
-シヴァ、　神
-イフリート、　神
-ガイア　神
-ウラヌス　神
-クロノス、　神
-ポセイドン、　神
-（アポロン、）
-（アレス、）
-（ヘルメス、）
-アフロディーテ　神
-ガネーシャ
-
-
-好み
-ゼウス　神
-ハデス　神
-リヴァイアサン
+本棚が怪しい|The bookshelf is suspicious	スイッチの色を本の色と同じ順番で並べてみよう！|Match the switch colors to the book colors in the same order!
+花の数字が怪しい|The numbers on the flowers look suspicious	各花に書いてある数字の順番にスイッチを押してみよう！|Press the switches in the order of the numbers on the flowers!
+数字が怪しい|The numbers look suspicious	5つの値札の合計金額を求めて、入力してみよう！|Add up the five price tags and enter the total!
+コップの中身が怪しい|The contents of the cups look suspicious	コップの液量を合わせてみよう！|Match the amount of liquid in the cups!
+鍵が怪しい|The key looks suspicious	扉のところで鍵を使ってみよう！|Try using the key by the door!
+箱の中が怪しい|The inside of the box looks suspicious	9つのスイッチを箱の中の色と合わせてみよう！|Match the nine switches to the colors inside the box!
+記号の並びが怪しい|The order of the symbols looks suspicious	記号の並びに合わせて、部屋の隅々にあるアルファベットを並べてみよう！|Arrange the letters around the room to match the order of the symbols!
+野菜の並びが怪しい|The order of the vegetables looks suspicious	野菜の並びに合わせてスイッチを押してみよう！|Press the switches to match the order of the vegetables!
+野菜の数が怪しい|The number of vegetables looks suspicious	野菜の数に合わせて、サイコロの目を変えてみよう！|Change the dice faces to match the number of vegetables!
+スーパーマンの光る手袋が怪しい|Superman's glowing gloves look suspicious	光る手袋に合わせて、クマの人形の目の、赤と緑のボタンを順番に押してみよう！|Following the glowing gloves press the red and green buttons on the bear doll's eyes in order!
+電車のタイヤのサイズが怪しい|The train wheel sizes look suspicious	電車のタイヤのサイズに合わせて、お城の前のボタンを操作してみよう！|Operate the buttons in front of the castle to match the train wheel sizes!
+出口の扉近くのロボットが怪しい|The robot near the exit door looks suspicious	ロボットに手に入れた人形の目をはめ込んでみよう！|Try fitting the doll eyes you found into the robot!
+オレンジ色のポスターとクマの人形が怪しい|The orange poster and the bear doll look suspicious	UFOキャッチャーにいるクマの人形の色に合わせて、ボタンの色を変えてみよう！|Change the button colors to match the colors of the bear dolls in the claw machine!
+ガチャガチャが怪しい|The capsule machine looks suspicious	コイン排出口を探して、ガチャガチャにコインを入れてみよう！|Find the coin return slot and put a coin into the capsule machine!
+青いポスターが怪しい|The blue poster looks suspicious	青いポスターに描かれたコマンドを入力してみよう|Try entering the command shown on the blue poster!
+棚に飾られている靴が怪しい|The shoes displayed on the shelf look suspicious	棚にある６つの靴に書いてある数字を元に、箱のボタンの数字を変えてみよう！|Use the numbers written on the six shoes on the shelf to change the numbers on the box buttons!
+引き出しのドアノブが怪しい|The drawer knob looks suspicious	手に入れたドアノブを使ってみよう！|Try using the knob you found!
+ブーツの写真が怪しい|The boot photo looks suspicious	カラーボックスの下段の箱のスイッチを押してみよう！|Try pressing the switches on the box in the bottom section of the cubby shelf!
+鍵が怪しい|The key looks suspicious	ドアのロックを鍵で開けてみよう！|Try unlocking the door with the key!
+ハンガーに掛かっている洋服が怪しい|The clothes hanging on the hanger look suspicious	かかっている洋服をヒントにタンスのスイッチを押してみよう|Use the hanging clothes as a clue and press the dresser switches!
+タオルに描かれた名前が怪しい|The names written on the towels look suspicious	タオルに描かれた６人の名前の頭文字を、カーテンに掛かっているボードに入力してみよう！|Enter the initials of the six names written on the towels onto the board hanging by the curtain!
+カーテンの中に掛かっているTシャツが怪しい|The T-shirts hanging behind the curtain look suspicious	Tシャツの色の順番に、鏡の右上のスイッチの色を変えてみよう！|Change the colors of the switches at the upper right of the mirror to match the order of the T-shirt colors!
+鏡に描かれている数字が怪しい|The numbers on the mirror look suspicious	出口の扉のコードを入力してみよう！|Try entering the code for the exit door!
+灰色の時計が怪しい|The gray clock looks suspicious	金庫のダイヤルの向きを、灰色の時計の短針、長針、秒針の位置に合わせてみよう！|Match the directions of the safe dials to the positions of the hour hand minute hand and second hand on the gray clock!
+4つ並んでる時計が怪しい|The four clocks in a row look suspicious	展示されている時計のスイッチを時計の針の向きをヒントに並べてみよう！|Arrange the switches on the displayed clocks using the directions of the clock hands as a clue!
+時計のポスターの文字が怪しい|The letters on the clock poster look suspicious	「LOGE」を上下反対にすると、浮かび上がる数字を棚のコードに入力してみよう！|Turn "LOGE" upside down and enter the number that appears as the shelf code!
+電池が怪しい|The battery looks suspicious	電池を出口の扉にはめてみよう！|Try inserting the battery into the exit door!
+ブランコと滑り台が怪しい|The swing and slide look suspicious	ブランコに示された数字の順番に、滑り台の四角をたどった時の矢印を電灯に入力してみよう！|Follow the numbers shown on the swing and enter into the lamp the arrows you get by tracing the squares on the slide!
+噴水が怪しい|The fountain looks suspicious	噴水の水の勢いをヒントにして、ベンチの下の宝箱のスイッチを押してみよう！|Use the force of the fountain water as a clue and press the switches on the treasure chest under the bench!
+宝箱のメモが怪しい|The note in the treasure chest looks suspicious	公園を英語ではPARKというよね！虫かごに入力してみよう！|A park is called "PARK" in English right? Try entering it into the insect cage!
+はさみが怪しい|The scissors look suspicious	はさみを使って、公園の出口の安全テープをカットしてみよう！|Use the scissors to cut the safety tape at the park exit!
+トランプのマークが怪しい|The playing card suits look suspicious	色に合わせて、トランプのマークを合わせてみよう！|Match the playing card suits to the colors!
+人形の目の動きが怪しい|The movement of the doll's eyes looks suspicious	小箱のピンクと青のボタンを、人形の目が光る順番に押してみよう！|Press the pink and blue buttons on the small box in the order the doll's eyes light up!
+窓のつたの長さが怪しい|The lengths of the vines on the window look suspicious	部屋の隅のスイッチをつたの長さに合わせてみよう！|Match the switches in the corner of the room to the vine lengths!
+付箋に描かれている名前が怪しい|The names written on the sticky notes look suspicious	オレンジ色の箱のスイッチに、名前の頭文字を入力してみよう！|Enter the initials of the names into the switches on the orange box!
+ジグソーパズルが怪しい|The jigsaw puzzle looks suspicious	扉の右上の枠に、入手したジグソーパズルはめてみよう！|Try fitting the jigsaw puzzle piece you found into the frame at the upper right of the door!

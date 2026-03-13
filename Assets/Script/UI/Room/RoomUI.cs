@@ -95,19 +95,19 @@ namespace UI.Room
 			//左の部屋へ移動
 			_leftButton.onClick.AddListener(() =>
 			{
-				SoundManager.GetInstance().Play(SoundManager.SOUND_TYPE.Select);
+				SoundManager.GetInstance().Play(SoundManager.SOUND_TYPE.MoveRoom);
 				stageManager.MoveLeft();
 			});
 			//右の部屋へ移動
 			_rightButton.onClick.AddListener(() =>
 			{
-				SoundManager.GetInstance().Play(SoundManager.SOUND_TYPE.Select);
+				SoundManager.GetInstance().Play(SoundManager.SOUND_TYPE.MoveRoom);
 				stageManager.MoveRight();
 			});
 			//手前の部屋へ移動
 			_backButton.onClick.AddListener(() =>
 			{
-				SoundManager.GetInstance().Play(SoundManager.SOUND_TYPE.Select);
+				SoundManager.GetInstance().Play(SoundManager.SOUND_TYPE.MoveRoomBack);
 				stageManager.MoveBack();
 			});
 
@@ -125,10 +125,10 @@ namespace UI.Room
 						//trueなら答えを出す
 						var isAnswer = saveManager.SaveDataInstance.GetUsedHint(hint.Flag);
 						//答えかヒントで文言を変える
-						var dialog = dialogManager.CreateYesNoDialog( isAnswer ? "こうこくをみるとこたえがみれます":"こうこくをみるとヒントがみれます");
+						var dialog = dialogManager.CreateDialog(isAnswer ? "広告を見ると答えががみれます" : "広告を見るとヒントがみれます");
 						dialog.OffImage();
-						//YESを押したときだけ進む
-						dialog.OnYes += () =>
+						//OKを押したときだけ進む
+						dialog.OnClose += () =>
 						{	
 							//ここでリワード広告を出す
 							
@@ -136,7 +136,7 @@ namespace UI.Room
 							var message = hint.GetMessage((int)_saveManager.SaveDataInstance.GetLanguage(),
 								//ヒントを一度見たかどうかのフラグを設定
 								isAnswer);
-							var hintDialog = dialogManager.CreateDialog(message);
+							var hintDialog = dialogManager.CreateHintDialog(message);
 							SoundManager.GetInstance().Play(SoundManager.SOUND_TYPE.Decision);
 							//ヒントを見たフラグ
 							saveManager.SaveDataInstance.SetUsedHint(hint.Flag);
@@ -273,6 +273,34 @@ namespace UI.Room
 		}
 
 		/// <summary>
+		/// UIの入力可否を切り替える
+		/// </summary>
+		/// <param name="isEnabled"></param>
+		public void SetInputEnabled(bool isEnabled)
+		{
+			if (_leftButton != null)
+			{
+				_leftButton.interactable = isEnabled;
+			}
+			if (_rightButton != null)
+			{
+				_rightButton.interactable = isEnabled;
+			}
+			if (_backButton != null)
+			{
+				_backButton.interactable = isEnabled;
+			}
+			if (_hintButton != null)
+			{
+				_hintButton.interactable = isEnabled;
+			}
+			for (int i = 0; i < _itemIconList.Count; i++)
+			{
+				_itemIconList[i].SetInteractable(isEnabled);
+			}
+		}
+
+		/// <summary>
 		/// アイテムセレクト表示を消す
 		/// </summary>
 		private void ResetSelectItem()
@@ -312,6 +340,12 @@ namespace UI.Room
 				var unionItem = _itemAssetsDataBase.GetUnionItem(oldSelectItem);
 				if (oldSelectItem == selectItem)
 				{
+					if (selectItem == SaveData.ItemKind.KEY_4)
+					{
+						_selectItemKind = selectItem;
+						OnSelectedItem?.Invoke();
+						return;
+					}
 					//ダイアログをすべて消す
 					DialogManager.GetInstance().DialogClear();
 					//アイテム拡大ダイアログを出す

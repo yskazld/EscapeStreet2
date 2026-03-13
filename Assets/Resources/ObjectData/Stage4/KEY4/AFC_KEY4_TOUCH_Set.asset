@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: af67ccff6888f214dbf39ac928d7b993, type: 3}
   m_Name: AFC_KEY4_TOUCH_Set
   m_EditorClassIdentifier: 
-  FlagKind: 7e000000
+  FlagKind: 126
   SetNum: 1

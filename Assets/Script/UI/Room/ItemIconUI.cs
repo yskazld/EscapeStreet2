@@ -94,6 +94,18 @@ namespace UI.Room
 		}
 
 		/// <summary>
+		/// クリック可否を切り替える
+		/// </summary>
+		/// <param name="isActive"></param>
+		public void SetInteractable(bool isActive)
+		{
+			if (_button != null)
+			{
+				_button.interactable = isActive;
+			}
+		}
+
+		/// <summary>
 		/// アイテムの種類を取得
 		/// </summary>
 		/// <returns></returns>

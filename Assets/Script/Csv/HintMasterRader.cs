@@ -43,6 +43,11 @@ namespace Csv
 			foreach (var columns in csv)
 			{
 				string[] csvArr = columns;
+				if (csvArr == null || csvArr.Length < 3)
+				{
+					Debug.LogWarning($"[HintMasterReader] CSVの列数が不足しています。Expected>=3, Actual={csvArr?.Length ?? 0}");
+					continue;
+				}
 
 				//データを設定する
 				int index = 0;
@@ -53,8 +58,17 @@ namespace Csv
 				string[] answerMsgs = csvArr[index].Split('|');
 				index++;
 				//フラグ
-				Save.SaveData.SaveFlag flag =
-					(Save.SaveData.SaveFlag)Enum.Parse(typeof(Save.SaveData.SaveFlag), csvArr[index]);
+				var flagText = csvArr[index]?.Trim();
+				if (string.IsNullOrEmpty(flagText))
+				{
+					Debug.LogWarning("[HintMasterReader] CSVのフラグ列が空です。行をスキップします。");
+					continue;
+				}
+				if (!Enum.TryParse(flagText, out Save.SaveData.SaveFlag flag))
+				{
+					Debug.LogWarning($"[HintMasterReader] 不正なフラグ名: {flagText}. 行をスキップします。");
+					continue;
+				}
 				index++;
 
 				//ヒントデータ格納

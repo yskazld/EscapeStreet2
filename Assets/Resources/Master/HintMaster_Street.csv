@@ -1,0 +1,45 @@
+文言,条件　対象フラグがOFF,,画像番号
+本棚が怪しい|The bookshelf is suspicious,スイッチの色を本の色と同じ順番で並べてみよう！|Match the switch colors to the book colors in the same order!,STAGE_1_CLEAR,0
+花の数字が怪しい|The numbers on the flowers look suspicious,各花に書いてある数字の順番にスイッチを押してみよう！|Press the switches in the order of the numbers on the flowers!,STAGE_2_CLEAR,1
+数字が怪しい|The numbers look suspicious,5つの値札の合計金額を求めて、入力してみよう！|Add up the five price tags and enter the total!,STAGE_3_CLEAR,2
+コップの中身が怪しい|The contents of the cups look suspicious,コップの液量を合わせてみよう！|Match the amount of liquid in the cups!,STAGE_4_Tana,3
+鍵が怪しい|The key looks suspicious,扉のところで鍵を使ってみよう！|Try using the key by the door!,STAGE_4_CLEAR,4
+箱の中が怪しい|The inside of the box looks suspicious,9つのスイッチを箱の中の色と合わせてみよう！|Match the nine switches to the colors inside the box!,STAGE_5_Door,5
+記号の並びが怪しい|The order of the symbols looks suspicious,記号の並びに合わせて、部屋の隅々にあるアルファベットを並べてみよう！|Arrange the letters around the room to match the order of the symbols!,STAGE_5_CLEAR,6
+野菜の並びが怪しい|The order of the vegetables looks suspicious,野菜の並びに合わせてスイッチを押してみよう！|Press the switches to match the order of the vegetables!,STAGE_6_CURTAIN,7
+野菜の数が怪しい|The number of vegetables looks suspicious,野菜の数に合わせて、サイコロの目を変えてみよう！|Change the dice faces to match the number of vegetables!,STAGE_6_CLEAR,8
+スーパーマンの光る手袋が怪しい|Superman's glowing gloves look suspicious,光る手袋に合わせて、クマの人形の目の、赤と緑のボタンを順番に押してみよう！|Following the glowing gloves press the red and green buttons on the bear doll's eyes in order!,STAGE7_APPEAR_EYE_ROBOT1,9
+電車のタイヤのサイズが怪しい|The train wheel sizes look suspicious,電車のタイヤのサイズに合わせて、お城の前のボタンを操作してみよう！|Operate the buttons in front of the castle to match the train wheel sizes!,STAGE7_APPEAR_EYE_ROBOT2,10
+出口の扉近くのロボットが怪しい|The robot near the exit door looks suspicious,ロボットに手に入れた人形の目をはめ込んでみよう！|Try fitting the doll eyes you found into the robot!,STAGE_7_CLEAR,11
+オレンジ色のポスターとクマの人形が怪しい|The orange poster and the bear doll look suspicious,UFOキャッチャーにいるクマの人形の色に合わせて、ボタンの色を変えてみよう！|Change the button colors to match the colors of the bear dolls in the claw machine!,STAGE8_APPEAR_COIN,12
+ガチャガチャが怪しい|The capsule machine looks suspicious,コイン排出口を探して、ガチャガチャにコインを入れてみよう！|Find the coin return slot and put a coin into the capsule machine!,COIN8_TOUCH,13
+青いポスターが怪しい|The blue poster looks suspicious,青いポスターに描かれたコマンドを入力してみよう|Try entering the command shown on the blue poster!,STAGE_8_CLEAR,14
+棚に飾られている靴が怪しい|The shoes displayed on the shelf look suspicious,棚にある６つの靴に書いてある数字を元に、箱のボタンの数字を変えてみよう！|Use the numbers written on the six shoes on the shelf to change the numbers on the box buttons!,STAGE9_BOX_OPEN,15
+引き出しのドアノブが怪しい|The drawer knob looks suspicious,手に入れたドアノブを使ってみよう！|Try using the knob you found!,STAGE9_ON_TANA_OPEN,16
+ブーツの写真が怪しい|The boot photo looks suspicious,カラーボックスの下段の箱のスイッチを押してみよう！|Try pressing the switches on the box in the bottom section of the cubby shelf!,STAGE9_APPEAR_KEY,17
+鍵が怪しい|The key looks suspicious,ドアのロックを鍵で開けてみよう！|Try unlocking the door with the key!,STAGE_9_CLEAR,18
+ハンガーに掛かっている洋服が怪しい|The clothes hanging on the hanger look suspicious,かかっている洋服をヒントにタンスのスイッチを押してみよう|Use the hanging clothes as a clue and press the dresser switches!,STAGE10_ON_HIKIDASHI,19
+タオルに描かれた名前が怪しい|The names written on the towels look suspicious,タオルに描かれた６人の名前の頭文字を、カーテンに掛かっているボードに入力してみよう！|Enter the initials of the six names written on the towels onto the board hanging by the curtain!,STAGE10_ON_CURTAIN,20
+カーテンの中に掛かっているTシャツが怪しい|The T-shirts hanging behind the curtain look suspicious,Tシャツの色の順番に、鏡の右上のスイッチの色を変えてみよう！|Change the colors of the switches at the upper right of the mirror to match the order of the T-shirt colors!,STAGE10_ON_MIRROR,21
+鏡に描かれている数字が怪しい|The numbers on the mirror look suspicious,出口の扉のコードを入力してみよう！|Try entering the code for the exit door!,STAGE_10_CLEAR,22
+灰色の時計が怪しい|The gray clock looks suspicious,金庫のダイヤルの向きを、灰色の時計の短針、長針、秒針の位置に合わせてみよう！|Match the directions of the safe dials to the positions of the hour hand minute hand and second hand on the gray clock!,STAGE11_ON_KINKO1,23
+4つ並んでる時計が怪しい|The four clocks in a row look suspicious,展示されている時計のスイッチを時計の針の向きをヒントに並べてみよう！|Arrange the switches on the displayed clocks using the directions of the clock hands as a clue!,STAGE11_ON_CURTAIN,24
+時計のポスターの文字が怪しい|The letters on the clock poster look suspicious,"「LOGE」を上下反対にすると、浮かび上がる数字を棚のコードに入力してみよう！|Turn ""LOGE"" upside down and enter the number that appears as the shelf code!",STAGE11_ON_Tana,25
+電池が怪しい|The battery looks suspicious,電池を出口の扉にはめてみよう！|Try inserting the battery into the exit door!,STAGE_11_CLEAR,26
+ブランコと滑り台が怪しい|The swing and slide look suspicious,ブランコに示された数字の順番に、滑り台の四角をたどった時の矢印を電灯に入力してみよう！|Follow the numbers shown on the swing and enter into the lamp the arrows you get by tracing the squares on the slide!,STAGE12_ON_FOUNTAIN,27
+噴水が怪しい|The fountain looks suspicious,噴水の水の勢いをヒントにして、ベンチの下の宝箱のスイッチを押してみよう！|Use the force of the fountain water as a clue and press the switches on the treasure chest under the bench!,STAGE12_BOX_OPEN,28
+宝箱のメモが怪しい|The note in the treasure chest looks suspicious,"公園を英語ではPARKというよね！虫かごに入力してみよう！|A park is called ""PARK"" in English right? Try entering it into the insect cage!",STAGE12_KAGO_OPEN,29
+はさみが怪しい|The scissors look suspicious,はさみを使って、公園の出口の安全テープをカットしてみよう！|Use the scissors to cut the safety tape at the park exit!,STAGE_12_CLEAR,30
+トランプのマークが怪しい|The playing card suits look suspicious,色に合わせて、トランプのマークを合わせてみよう！|Match the playing card suits to the colors!,STAGE13_ON_DOLL,31
+人形の目の動きが怪しい|The movement of the doll's eyes looks suspicious,小箱のピンクと青のボタンを、人形の目が光る順番に押してみよう！|Press the pink and blue buttons on the small box in the order the doll's eyes light up!,STAGE13_ON_BOX1,32
+窓のつたの長さが怪しい|The lengths of the vines on the window look suspicious,部屋の隅のスイッチをつたの長さに合わせてみよう！|Match the switches in the corner of the room to the vine lengths!,STAGE13_ON_TUTA_TOWEL,33
+付箋に描かれている名前が怪しい|The names written on the sticky notes look suspicious,オレンジ色の箱のスイッチに、名前の頭文字を入力してみよう！|Enter the initials of the names into the switches on the orange box!,STAGE13_ON_BOX2,34
+ジグソーパズルが怪しい|The jigsaw puzzle looks suspicious,扉の右上の枠に、入手したジグソーパズルはめてみよう！|Try fitting the jigsaw puzzle piece you found into the frame at the upper right of the door!,STAGE_13_CLEAR,35
+,,,36
+,,,37
+,,,38
+,,,39
+,,,40
+,,,41
+,,,42
+,,,43

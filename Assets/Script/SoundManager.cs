@@ -27,7 +27,51 @@ public class SoundManager : MonoBehaviour
 
         /// コイン
         Coin,
-        Num
+        /// 部屋移動(左右)
+        MoveRoom,
+        /// 部屋移動(Back)
+        MoveRoomBack,
+        /// ステージに入る
+        EnterRoom,
+        /// ステージに入る(ステージ１２)
+        EnterRoomWalk,
+        /// ボタンを押した時の音
+        PushButton,
+        /// ギミッククリア時にドアが開く音
+        OpenDoor,
+        /// 棚の扉が開く音
+        OpenTana,
+        /// アイテム入手時
+        GetItem,
+        /// 鍵を開けた時
+        UnlockKey,
+        ///　レジを開けた時
+        OpenRegister,
+        ///　カーテンが開く音
+        OpenCurtain,
+        ///　アイテム出現音
+        AppearItem,
+        ///　ロボットの目を装備
+        RobotEyeEquip,
+        ///　アニメーション色変え
+        DollColorChange,
+        ///　ダイヤルを回す音
+        TurnDial,
+        ///　電池を入れる音
+        BatteryON,
+        ///　箱を開ける音
+        OpenBox, 
+        ///　はさみで着る音
+        UseSissors,
+
+
+
+
+
+
+
+        Num,
+
     }
 	public static SoundManager GetInstance()
 	{
@@ -96,6 +140,21 @@ public class SoundManager : MonoBehaviour
 		for (int i = 0; i < audioSources.Length; i++)
 		{
 			audioSources[i].Stop();
+		}
+	}
+
+	/// <summary>
+	/// 指定した音を止める
+	/// </summary>
+	public void Stop(SOUND_TYPE sound)
+	{
+		for (int i = 0; i < audioSources.Length; i++)
+		{
+			var clip = audioSources[i].clip;
+			if (clip != null && clip.name == sound.ToString())
+			{
+				audioSources[i].Stop();
+			}
 		}
 	}
 }

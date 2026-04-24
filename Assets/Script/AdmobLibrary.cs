@@ -1,5 +1,6 @@
 ﻿using GoogleMobileAds.Api;
 using System;
+using System.Threading.Tasks;
 using UnityEngine;
 
 /// <summary>
@@ -7,19 +8,39 @@ using UnityEngine;
 /// </summary>
 public class AdmobLibrary
 {
+	private const string ResumeInterstitialPendingKey = "Admob.ResumeInterstitialPending";
 	private static BannerView _bannerView;
 	private static InterstitialAd _interstitialAd;
 	private static RewardedAd _rewardedAd;
+	private static bool _isInitialized;
+	private static bool _isInitializing;
+	private static bool _returnedToForegroundInCurrentProcess;
+	private static bool _isLoadingInterstitial;
+	private static bool _isLoadingReward;
+	private static bool _isInterstitialReloadScheduled;
+	private static bool _isRewardReloadScheduled;
+	private static int _interstitialRetryCount;
+	private static int _rewardRetryCount;
 
 	public static Action<double> OnReward;
+	public static Action OnRewardClosed;
+	public static Action OnRewardFailedToShow;
 
 	public static Action OnLoadedInterstitial;
+	public static Action OnInterstitialClosed;
+	public static Action OnInterstitialFailedToShow;
 
 	/// <summary>
 	/// ゲーム起動　初回に一度だけ呼ぶ
 	/// </summary>
 	public static void FirstSetting()
 	{
+		if (_isInitialized || _isInitializing)
+		{
+			return;
+		}
+
+		_isInitializing = true;
 		//13歳以下を対象と「する」場合はtrue
 		RequestConfiguration request = new RequestConfiguration
 		{
@@ -28,11 +49,16 @@ public class AdmobLibrary
 
 
 		MobileAds.SetRequestConfiguration(request);
+		MobileAds.RaiseAdEventsOnUnityMainThread = true;
 
 		MobileAds.Initialize((InitializationStatus initStatus) =>
 		{
 			// This callback is called once the MobileAds SDK is initialized.
+			_isInitializing = false;
+			_isInitialized = true;
+			RestoreGameTiming();
 			InitInterstitial();
+			LoadReward();
 
 		});
 	}
@@ -45,6 +71,7 @@ public class AdmobLibrary
 	/// <param name="position"></param>
 	public static void RequestBanner(AdSize size, AdPosition position, bool collapsible)
 	{
+		FirstSetting();
 #if UNITY_ANDROID
         //自分のID
         //string adUnitId = "ca-app-pub-6073747809973329/9617256012"; // ← ご自身のユニットID
@@ -62,10 +89,16 @@ public class AdmobLibrary
         
 #endif
 
+		if (_bannerView != null)
+		{
+			_bannerView.Destroy();
+			_bannerView = null;
+		}
+
 		AdSize adaptiveSize =
 					AdSize.GetCurrentOrientationAnchoredAdaptiveBannerAdSizeWithWidth(AdSize.FullWidth);
 
-		_bannerView = new BannerView(adUnitId, adaptiveSize, AdPosition.Bottom);
+		_bannerView = new BannerView(adUnitId, adaptiveSize, position);
 
 		//セーフエリアを考慮
 		// var area = Screen.safeArea;
@@ -94,6 +127,7 @@ public class AdmobLibrary
 		if (_bannerView != null)
 		{
 			_bannerView.Destroy();
+			_bannerView = null;
 		}
 	}
 
@@ -102,6 +136,11 @@ public class AdmobLibrary
 	/// </summary>
 	private static void InitInterstitial()
 	{
+		if (_isLoadingInterstitial)
+		{
+			return;
+		}
+
 #if UNITY_ANDROID
         //自分のID
         //string adUnitId = "ca-app-pub-6073747809973329/1658874944";
@@ -126,19 +165,23 @@ public class AdmobLibrary
 			_interstitialAd = null;
 		}
 
+		_isLoadingInterstitial = true;
 		Debug.Log("InitInterstitial");
 		// send the request to load the ad.
 		InterstitialAd.Load(adUnitId, adRequest,
 			(InterstitialAd ad, LoadAdError error) =>
 			{
+				_isLoadingInterstitial = false;
 				// if error is not null, the load request failed.
 				if (error != null || ad == null)
 				{
 					Debug.LogError("interstitial ad failed to load an ad " +
 					               "with error : " + error);
+					ScheduleInterstitialReload();
 					return;
 				}
 
+				_interstitialRetryCount = 0;
 				Debug.Log("Interstitial ad loaded with response : "
 				          + ad.GetResponseInfo());
 
@@ -156,12 +199,23 @@ public class AdmobLibrary
 				// Raised when an ad opened full screen content.
 				ad.OnAdFullScreenContentOpened += () => { Debug.Log("Interstitial ad full screen content opened."); };
 				// Raised when the ad closed full screen content.
-				ad.OnAdFullScreenContentClosed += () => { Debug.Log("Interstitial ad full screen content closed."); };
+				ad.OnAdFullScreenContentClosed += () =>
+				{
+					Debug.Log("Interstitial ad full screen content closed.");
+					RestoreGameTiming();
+					_interstitialAd = null;
+					InitInterstitial();
+					OnInterstitialClosed?.Invoke();
+				};
 				// Raised when the ad failed to open full screen content.
 				ad.OnAdFullScreenContentFailed += (AdError error) =>
 				{
 					Debug.LogError("Interstitial ad failed to open full screen content " +
 					               "with error : " + error);
+					RestoreGameTiming();
+					_interstitialAd = null;
+					ScheduleInterstitialReload();
+					OnInterstitialFailedToShow?.Invoke();
 				};
 				_interstitialAd = ad;
 				OnLoadedInterstitial?.Invoke();
@@ -174,6 +228,7 @@ public class AdmobLibrary
 	public static void PlayInterstitial()
 	{
 		Debug.Log("PlayInterstitial");
+		FirstSetting();
 		if (_interstitialAd != null && _interstitialAd.CanShowAd())
 		{
 			Debug.Log("Showing interstitial ad.");
@@ -182,6 +237,8 @@ public class AdmobLibrary
 		else
 		{
 			Debug.LogError("Interstitial ad is not ready yet.");
+			InitInterstitial();
+			OnInterstitialFailedToShow?.Invoke();
 		}
 	}
 
@@ -194,7 +251,13 @@ public class AdmobLibrary
 		{
 			Debug.Log("DestroyInterstitial");
 			_interstitialAd.Destroy();
+			_interstitialAd = null;
 		}
+	}
+
+	public static bool IsInterstitialReady()
+	{
+		return _interstitialAd != null && _interstitialAd.CanShowAd();
 	}
 
 	/// <summary>
@@ -202,6 +265,12 @@ public class AdmobLibrary
 	/// </summary>
 	public static void LoadReward()
 	{
+		FirstSetting();
+		if (_isLoadingReward)
+		{
+			return;
+		}
+
 		string adUnitId;
 #if UNITY_ANDROID
         //自分のID
@@ -219,18 +288,26 @@ public class AdmobLibrary
 		adUnitId = "unexpected_platform";
 #endif
 		var adRequest = new AdRequest();
+		if (_rewardedAd != null)
+		{
+			_rewardedAd.Destroy();
+		}
 		_rewardedAd = null;
+		_isLoadingReward = true;
 		RewardedAd.Load(adUnitId, adRequest,
 			(RewardedAd ad, LoadAdError error) =>
 			{
+				_isLoadingReward = false;
 				// if error is not null, the load request failed.
 				if (error != null || ad == null)
 				{
 					Debug.LogError("rewarded ad failed to load an ad " +
 					               "with error : " + error);
+					ScheduleRewardReload();
 					return;
 				}
 
+				_rewardRetryCount = 0;
 				Debug.Log("Rewarded ad loaded with response : "
 				          + ad.GetResponseInfo());
 				// Raised when the ad is estimated to have earned money.
@@ -247,12 +324,23 @@ public class AdmobLibrary
 				// Raised when an ad opened full screen content.
 				ad.OnAdFullScreenContentOpened += () => { Debug.Log("Rewarded ad full screen content opened."); };
 				// Raised when the ad closed full screen content.
-				ad.OnAdFullScreenContentClosed += () => { Debug.Log("Rewarded ad full screen content closed."); };
+				ad.OnAdFullScreenContentClosed += () =>
+				{
+					Debug.Log("Rewarded ad full screen content closed.");
+					RestoreGameTiming();
+					OnRewardClosed?.Invoke();
+					_rewardedAd = null;
+					LoadReward();
+				};
 				// Raised when the ad failed to open full screen content.
 				ad.OnAdFullScreenContentFailed += (AdError error) =>
 				{
 					Debug.LogError("Rewarded ad failed to open full screen content " +
 					               "with error : " + error);
+					RestoreGameTiming();
+					OnRewardFailedToShow?.Invoke();
+					_rewardedAd = null;
+					ScheduleRewardReload();
 				};
 				_rewardedAd = ad;
 			});
@@ -263,16 +351,21 @@ public class AdmobLibrary
 	/// </summary>
 	public static void ShowReward()
 	{
+		FirstSetting();
 		if (_rewardedAd != null && _rewardedAd.CanShowAd())
 		{
 			_rewardedAd.Show((Reward reward) =>
 			{
-				// TODO: Reward the user.
-				Debug.Log(String.Format("Reward ", reward.Type, reward.Amount));
+				Debug.Log($"Reward earned. Type: {reward.Type}, Amount: {reward.Amount}");
+				RestoreGameTiming();
 				OnReward?.Invoke(reward.Amount);
-				_rewardedAd.Destroy();
-				LoadReward();
 			});
+		}
+		else
+		{
+			Debug.LogError("Rewarded ad is not ready yet.");
+			LoadReward();
+			OnRewardFailedToShow?.Invoke();
 		}
 	}
 
@@ -293,6 +386,95 @@ public class AdmobLibrary
 	/// <returns></returns>
 	public static bool IsActiveReward()
 	{
-		return _rewardedAd != null;
+		return _rewardedAd != null && _rewardedAd.CanShowAd();
+	}
+
+	public static void MarkResumeInterstitialPending()
+	{
+		PlayerPrefs.SetInt(ResumeInterstitialPendingKey, 1);
+		PlayerPrefs.Save();
+	}
+
+	public static bool ConsumeResumeInterstitialPending()
+	{
+		if (PlayerPrefs.GetInt(ResumeInterstitialPendingKey, 0) == 0)
+		{
+			return false;
+		}
+
+		if (_returnedToForegroundInCurrentProcess)
+		{
+			return false;
+		}
+
+		PlayerPrefs.DeleteKey(ResumeInterstitialPendingKey);
+		PlayerPrefs.Save();
+		return true;
+	}
+
+	public static bool HasResumeInterstitialPending()
+	{
+		if (PlayerPrefs.GetInt(ResumeInterstitialPendingKey, 0) == 0)
+		{
+			return false;
+		}
+
+		return !_returnedToForegroundInCurrentProcess;
+	}
+
+	public static void ClearResumeInterstitialPending()
+	{
+		if (!PlayerPrefs.HasKey(ResumeInterstitialPendingKey))
+		{
+			return;
+		}
+
+		PlayerPrefs.DeleteKey(ResumeInterstitialPendingKey);
+		PlayerPrefs.Save();
+	}
+
+	public static void NotifyReturnedToForegroundInCurrentProcess()
+	{
+		_returnedToForegroundInCurrentProcess = true;
+		RestoreGameTiming();
+	}
+
+	private static async void ScheduleInterstitialReload()
+	{
+		if (_isInterstitialReloadScheduled)
+		{
+			return;
+		}
+
+		_isInterstitialReloadScheduled = true;
+		_interstitialRetryCount = Mathf.Min(_interstitialRetryCount + 1, 6);
+		var delayMs = Mathf.Min(1000 * (1 << (_interstitialRetryCount - 1)), 30000);
+		await Task.Delay(delayMs);
+		_isInterstitialReloadScheduled = false;
+		InitInterstitial();
+	}
+
+	private static async void ScheduleRewardReload()
+	{
+		if (_isRewardReloadScheduled)
+		{
+			return;
+		}
+
+		_isRewardReloadScheduled = true;
+		_rewardRetryCount = Mathf.Min(_rewardRetryCount + 1, 6);
+		var delayMs = Mathf.Min(1000 * (1 << (_rewardRetryCount - 1)), 30000);
+		await Task.Delay(delayMs);
+		_isRewardReloadScheduled = false;
+		LoadReward();
+	}
+
+	public static void RestoreGameTiming()
+	{
+		if (Time.timeScale != 1f)
+		{
+			Time.timeScale = 1f;
+		}
+		AudioListener.pause = false;
 	}
 }

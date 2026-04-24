@@ -1,4 +1,9 @@
-﻿using Item;
+﻿using System.Collections;
+using System.Collections.Generic;
+using GoogleMobileAds.Api;
+using Item;
+using Save;
+using TMPro;
 using UI.Dialog;
 using UnityEngine;
 
@@ -7,6 +12,30 @@ using UnityEngine;
 /// </summary>
 public class GameManager : MonoBehaviour
 {
+	private readonly struct LocalizedSceneText
+	{
+		public LocalizedSceneText(string japanese, string english)
+		{
+			Japanese = japanese;
+			English = english;
+		}
+
+		public string Japanese { get; }
+		public string English { get; }
+	}
+
+	private static readonly Dictionary<string, LocalizedSceneText> SceneTextMap = new Dictionary<string, LocalizedSceneText>
+	{
+		{ "SUM_Text", new LocalizedSceneText("合計は？", "Total?") },
+		{ "Bread2_Koppepan", new LocalizedSceneText("コッペパン", "Koppe Bread") },
+		{ "Bread1_bisket", new LocalizedSceneText("ビスケット", "Biscuit") },
+		{ "Bread3_Francepan", new LocalizedSceneText("フランスパン", "French Bread") },
+		{ "Bread4_kurowassan", new LocalizedSceneText("クロワッサン", "Croissant") },
+		{ "Hachiue", new LocalizedSceneText("鉢", "Pot") },
+	};
+
+	private bool _shouldShowResumeInterstitial;
+	private SaveData.LANGUAGE _lastAppliedLanguage;
 	/// <summary>
 	/// ステージ全体管理
 	/// </summary>
@@ -42,6 +71,10 @@ public class GameManager : MonoBehaviour
 	
 	void Awake()
 	{
+		AdmobLibrary.FirstSetting();
+		AdmobLibrary.RequestBanner(AdSize.Banner, AdPosition.Bottom, false);
+		_shouldShowResumeInterstitial = AdmobLibrary.HasResumeInterstitialPending();
+
 		if (StageManagerInstance == null)
 		{
 			//優先的に子階層から探し、なければシーン全体から取得
@@ -86,6 +119,7 @@ public class GameManager : MonoBehaviour
 
 		//ロード
 		SaveManagerInstance.LoadOrInitializeReturnInitialize();
+		_lastAppliedLanguage = SaveManagerInstance.SaveDataInstance.GetLanguage();
 		
 		//初回フラグを無効化
 		//タイトルでContinueを消すために使う
@@ -147,6 +181,29 @@ public class GameManager : MonoBehaviour
 
 		//ルームに入室
 		StageManagerInstance.EnterRoom(SaveManagerInstance.SaveDataInstance.GetNowRoom());
+		ApplySceneLocalizedTexts();
+
+		if (_shouldShowResumeInterstitial)
+		{
+			StartCoroutine(WaitAndShowResumeInterstitial());
+		}
+	}
+
+	private void Update()
+	{
+		if (SaveManagerInstance?.SaveDataInstance == null)
+		{
+			return;
+		}
+
+		var currentLanguage = SaveManagerInstance.SaveDataInstance.GetLanguage();
+		if (_lastAppliedLanguage == currentLanguage)
+		{
+			return;
+		}
+
+		_lastAppliedLanguage = currentLanguage;
+		ApplySceneLocalizedTexts();
 	}
 
 	/// <summary>
@@ -164,11 +221,84 @@ public class GameManager : MonoBehaviour
 	/// <param name="focus"></param>
 	private void OnApplicationFocus(bool focus)
 	{
-		if(!focus)
+		if (!focus)
 		{
 			//進行保存
 			//Saveはゲームクリア時など任意のタイミングでも行う
 			SaveManagerInstance.Save();
+			AdmobLibrary.MarkResumeInterstitialPending();
+			return;
+		}
+
+		AdmobLibrary.NotifyReturnedToForegroundInCurrentProcess();
+	}
+
+	private void OnApplicationPause(bool pauseStatus)
+	{
+		if (pauseStatus)
+		{
+			AdmobLibrary.MarkResumeInterstitialPending();
+			return;
+		}
+
+		AdmobLibrary.NotifyReturnedToForegroundInCurrentProcess();
+	}
+
+	private void OnApplicationQuit()
+	{
+		if (SaveManagerInstance != null)
+		{
+			SaveManagerInstance.Save();
+		}
+		AdmobLibrary.MarkResumeInterstitialPending();
+	}
+
+	private void OnDestroy()
+	{
+		AdmobLibrary.DestroyBanner();
+	}
+
+	private IEnumerator WaitAndShowResumeInterstitial()
+	{
+		const float waitSeconds = 5f;
+		var elapsed = 0f;
+		while (_shouldShowResumeInterstitial && elapsed < waitSeconds)
+		{
+			if (AdmobLibrary.IsInterstitialReady())
+			{
+				AdmobLibrary.ClearResumeInterstitialPending();
+				AdmobLibrary.PlayInterstitial();
+				yield break;
+			}
+
+			elapsed += Time.unscaledDeltaTime;
+				yield return null;
+			}
+		}
+
+	private void ApplySceneLocalizedTexts()
+	{
+		if (SaveManagerInstance?.SaveDataInstance == null)
+		{
+			return;
+		}
+
+		var isEnglish = SaveManagerInstance.SaveDataInstance.GetLanguage() == SaveData.LANGUAGE.ENGLISH;
+		var textList = FindObjectsByType<TextMeshProUGUI>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+
+		foreach (var textComponent in textList)
+		{
+			if (textComponent == null || !textComponent.gameObject.scene.IsValid())
+			{
+				continue;
+			}
+
+			if (!SceneTextMap.TryGetValue(textComponent.gameObject.name, out var localizedText))
+			{
+				continue;
+			}
+
+			textComponent.text = isEnglish ? localizedText.English : localizedText.Japanese;
 		}
 	}
-}
+	}

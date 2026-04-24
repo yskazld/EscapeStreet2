@@ -187,7 +187,7 @@ namespace Stage
 
 		private IEnumerator AutoHideClearPanel()
 		{
-			yield return new WaitForSeconds(_clearPanelAutoHideSeconds);
+			yield return new WaitForSecondsRealtime(_clearPanelAutoHideSeconds);
 			_clearPanelRoot.SetActive(false);
 			_clearPanelAutoHideCoroutine = null;
 		}

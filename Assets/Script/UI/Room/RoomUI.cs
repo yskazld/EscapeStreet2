@@ -82,6 +82,11 @@ namespace UI.Room
 		private Save.SaveManager _saveManager;
 
 		private ItemAssetsDataBase _itemAssetsDataBase;
+		private Csv.HintMasterReader _hintMasterReader;
+		private SaveData.LANGUAGE _lastLanguage = SaveData.LANGUAGE.JAPAN;
+		private Action _pendingRewardSuccessAction;
+		private bool _pendingRewardEarned;
+		private bool _rewardEventRegistered;
 
 		/// <summary>
 		/// 初期化
@@ -92,6 +97,9 @@ namespace UI.Room
 			Instance = this;
 			_saveManager = saveManager;
 			_itemAssetsDataBase = itemAssetsDataBase;
+			_hintMasterReader = hintMasterReader;
+			_lastLanguage = _saveManager.SaveDataInstance.GetLanguage();
+			RegisterRewardEvents();
 			//左の部屋へ移動
 			_leftButton.onClick.AddListener(() =>
 			{
@@ -122,41 +130,7 @@ namespace UI.Room
 					if (_saveManager.SaveDataInstance.GetFlagNum(hint.Flag) == 0)
 					{
 						var dialogManager = UI.Dialog.DialogManager.GetInstance();
-						//trueなら答えを出す
-						var isAnswer = saveManager.SaveDataInstance.GetUsedHint(hint.Flag);
-						//答えかヒントで文言を変える
-						var dialog = dialogManager.CreateDialog(isAnswer ? "広告を見ると答えががみれます" : "広告を見るとヒントがみれます");
-						dialog.OffImage();
-						//OKを押したときだけ進む
-						dialog.OnClose += () =>
-						{	
-							//ここでリワード広告を出す
-							
-							//フラグがオンではないならそれを出す
-							var message = hint.GetMessage((int)_saveManager.SaveDataInstance.GetLanguage(),
-								//ヒントを一度見たかどうかのフラグを設定
-								isAnswer);
-							var hintDialog = dialogManager.CreateHintDialog(message);
-							SoundManager.GetInstance().Play(SoundManager.SOUND_TYPE.Decision);
-							//ヒントを見たフラグ
-							saveManager.SaveDataInstance.SetUsedHint(hint.Flag);
-							UpdateHintButtonText(hintMasterReader, saveManager);
-							var link = "";
-							if (isAnswer)
-							{
-								//答えの画像のリンク
-								link = "Answer/" + link;
-							}
-							else
-							{
-								//ヒントの画像のリンク
-								link = "Hint/" + link;
-							}
-
-							link += i.ToString();
-							//ダイアログの画像を設定する
-							hintDialog.SetImage(link);
-						};
+						OpenHintSelectionDialog(dialogManager, saveManager, hint, i);
 						return;
 					}
 				}
@@ -209,6 +183,23 @@ namespace UI.Room
 			UpdateHintButtonText(hintMasterReader, saveManager);
 		}
 
+		private void Update()
+		{
+			if (_saveManager == null || _saveManager.SaveDataInstance == null || _hintMasterReader == null)
+			{
+				return;
+			}
+
+			var language = _saveManager.SaveDataInstance.GetLanguage();
+			if (_lastLanguage == language)
+			{
+				return;
+			}
+
+			_lastLanguage = language;
+			UpdateHintButtonText(_hintMasterReader, _saveManager);
+		}
+
 		/// <summary>
 		/// ヒントボタンの表示を更新する
 		/// ヒントを表示できるときは「ヒント」
@@ -231,12 +222,12 @@ namespace UI.Room
 					if (saveManager.SaveDataInstance.GetUsedHint(hint.Flag))
 					{
 						//一回見たらこたえを表示
-						_hintButtonMessage.text = "こたえ";
+						_hintButtonMessage.text = Localize("こたえ", "ANS\nWER");
 					}
 					else
 					{
 						//通常はヒントと表示
-						_hintButtonMessage.text = "ヒント";
+						_hintButtonMessage.text = Localize("ヒント", "Hint");
 					}
 
 					return;
@@ -244,6 +235,148 @@ namespace UI.Room
 			}
 			//表示の必要がないので非表示状態
 			_hintButtonMessage.text = "---";
+		}
+
+		private void OpenHintSelectionDialog(DialogManager dialogManager, SaveManager saveManager, Csv.HintMasterData hint, int hintIndex)
+		{
+			var hasSeenHint = saveManager.SaveDataInstance.GetUsedHint(hint.Flag);
+			var dialog = dialogManager.CreateYesNoDialog(GetHintPromptText(hasSeenHint));
+			dialog.OffImage();
+
+			if (hasSeenHint)
+			{
+				dialog.SetButtonTexts(
+					Localize("答えを\n見る", "Show\nAnswer"),
+					Localize("いいえ", "No"),
+					Localize("もう一度\nヒント", "Hint Again"));
+				dialog.OnYes += () =>
+				{
+					RequestRewardAndShow(dialogManager, saveManager, hint, hintIndex, true);
+				};
+				dialog.OnThird += () =>
+				{
+					ShowHintOrAnswer(dialogManager, saveManager, hint, hintIndex, false);
+				};
+			}
+			else
+			{
+				dialog.SetButtonTexts(Localize("はい", "Yes"), Localize("いいえ", "No"));
+				dialog.OnYes += () =>
+				{
+					RequestRewardAndShow(dialogManager, saveManager, hint, hintIndex, false);
+				};
+			}
+
+			dialog.OnNo += () => { };
+		}
+
+		private void ShowHintOrAnswer(DialogManager dialogManager, SaveManager saveManager, Csv.HintMasterData hint, int hintIndex, bool isAnswer)
+		{
+			var message = hint.GetMessage((int)_saveManager.SaveDataInstance.GetLanguage(), isAnswer);
+			var hintDialog = dialogManager.CreateHintDialog(message);
+			SoundManager.GetInstance().Play(SoundManager.SOUND_TYPE.Decision);
+
+			if (!saveManager.SaveDataInstance.GetUsedHint(hint.Flag))
+			{
+				saveManager.SaveDataInstance.SetUsedHint(hint.Flag);
+			}
+
+			UpdateHintButtonText(_hintMasterReader, saveManager);
+			hintDialog.SetImage((isAnswer ? "Answer/" : "Hint/") + hintIndex);
+		}
+
+		private void RequestRewardAndShow(DialogManager dialogManager, SaveManager saveManager, Csv.HintMasterData hint, int hintIndex, bool isAnswer)
+		{
+			_pendingRewardEarned = false;
+			_pendingRewardSuccessAction = () => { ShowHintOrAnswer(dialogManager, saveManager, hint, hintIndex, isAnswer); };
+			AdmobLibrary.ShowReward();
+		}
+
+		private void RegisterRewardEvents()
+		{
+			if (_rewardEventRegistered)
+			{
+				return;
+			}
+
+			_rewardEventRegistered = true;
+			AdmobLibrary.OnReward += HandleRewardEarned;
+			AdmobLibrary.OnRewardClosed += HandleRewardClosed;
+			AdmobLibrary.OnRewardFailedToShow += HandleRewardFailedToShow;
+		}
+
+		private void HandleRewardEarned(double amount)
+		{
+			_pendingRewardEarned = true;
+		}
+
+		private void HandleRewardClosed()
+		{
+			if (_pendingRewardEarned)
+			{
+				var action = _pendingRewardSuccessAction;
+				_pendingRewardSuccessAction = null;
+				_pendingRewardEarned = false;
+				action?.Invoke();
+				return;
+			}
+
+			_pendingRewardSuccessAction = null;
+			_pendingRewardEarned = false;
+		}
+
+		private void HandleRewardFailedToShow()
+		{
+			_pendingRewardSuccessAction = null;
+			_pendingRewardEarned = false;
+			var dialogManager = DialogManager.GetInstance();
+			if (dialogManager == null)
+			{
+				return;
+			}
+
+			var dialog = dialogManager.CreateDialog(Localize(
+				"通信状況が悪いみたいです。通信環境の良いところで、もう一度トライしてみてください",
+				"It looks like the connection is unstable. Please try again later in a place with a better connection."));
+			dialog.OffImage();
+		}
+
+		private string GetHintPromptText(bool hasSeenHint)
+		{
+			if (hasSeenHint)
+			{
+				return Localize(
+					"答えを見ますか？\nもう一度ヒントを見ることもできます。",
+					"Would you like to see the answer?\nYou can also view the hint again.");
+			}
+
+			return Localize(
+				"広告を見るとヒントがみれます。\n見ますか？",
+				"Watch an ad to see the hint.\nWould you like to continue?");
+		}
+
+		private string Localize(string japanese, string english)
+		{
+			if (_saveManager != null && _saveManager.SaveDataInstance != null &&
+				_saveManager.SaveDataInstance.GetLanguage() == SaveData.LANGUAGE.ENGLISH)
+			{
+				return english;
+			}
+
+			return japanese;
+		}
+
+		private void OnDestroy()
+		{
+			if (!_rewardEventRegistered)
+			{
+				return;
+			}
+
+			AdmobLibrary.OnReward -= HandleRewardEarned;
+			AdmobLibrary.OnRewardClosed -= HandleRewardClosed;
+			AdmobLibrary.OnRewardFailedToShow -= HandleRewardFailedToShow;
+			_rewardEventRegistered = false;
 		}
 
 		/// <summary>

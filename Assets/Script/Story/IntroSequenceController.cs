@@ -149,7 +149,9 @@ namespace Story
 			}
 
 			SetInputEnabled(false);
-			yield return ShowDialogAndWait("よし戻ってきた！！\nこれからまた謎解き開始だ！\n早く家に帰らないと！！");
+			yield return ShowDialogAndWait(Localize(
+				"よし戻ってきた！！\nこれからまた謎解き開始だ！\n早く家に帰らないと！！",
+				"All right, I'm back!!\nTime to start solving mysteries again!\nI need to get home soon!!"));
 			SetInputEnabled(true);
 		}
 
@@ -160,43 +162,43 @@ namespace Story
 
 			_stageManager.EnterRoom(_roomIdStreetNormal);
 			yield return ShowDialogSequence(
-                "おかあさんに頼まれて、\n商店街へ買い物に来た。",
-                "いつも通りの、見慣れた\n景色のはずだったけど、\nなにか変だ！",
-                "いや、気にしても\n仕方がない！", 
-                "今日はサッカーの日本代表の試合があるんだ。",
-                "夜までには、絶対帰らないと！！！！"
-            );
+				Localize("おかあさんに頼まれて、\n商店街へ買い物に来た。", "Mom asked me to come shopping in the shopping district."),
+				Localize("いつも通りの、見慣れた\n景色のはずだったけど、\nなにか変だ！", "It should have been the same familiar sight as always,\nbut something feels wrong!"),
+				Localize("いや、気にしても\n仕方がない！", "No, worrying about it won't help!"),
+				Localize("今日はサッカーの日本代表の試合があるんだ。", "The Japan national soccer team has a match today."),
+				Localize("夜までには、絶対帰らないと！！！！", "I have to get home before tonight, no matter what!!!!")
+			);
 
 			yield return PlaySmoke();
-			yield return ShowDialogAndWait("……あれ？なんだか、霧が出てきた？");
+			yield return ShowDialogAndWait(Localize("……あれ？なんだか、霧が出てきた？", "...Huh? Is it starting to get foggy?"));
 
 
-            yield return PlayWhiteToBlackFade();
-            _stageManager.EnterRoom(_roomIdStreetFog);
-            yield return ShowDialogAndWait("……ここは……？さっきまでと、雰囲気が違う……");
+			yield return PlayWhiteToBlackFade();
+			_stageManager.EnterRoom(_roomIdStreetFog);
+			yield return ShowDialogAndWait(Localize("……ここは……？さっきまでと、雰囲気が違う……", "...Where am I...? It feels different from just a moment ago..."));
 
 
-			yield return ShowDialogAndWait("霧が濃くて、遠くがよく見えない……");
+			yield return ShowDialogAndWait(Localize("霧が濃くて、遠くがよく見えない……", "The fog is so thick, I can barely see into the distance..."));
 
 			_stageManager.EnterRoom(_roomIdSign);
 			if (_roomIdSignHoldSeconds > 0f)
 			{
-				yield return new WaitForSeconds(_roomIdSignHoldSeconds);
+				yield return new WaitForSecondsRealtime(_roomIdSignHoldSeconds);
 			}
-			yield return ShowDialogAndWait("……こんな看板、あったっけ？");
+			yield return ShowDialogAndWait(Localize("……こんな看板、あったっけ？", "...Was there always a sign like this?"));
 			yield return ShowDialogSequence(
-				"看板の文字：",
-				"「脱出したければ、各店の謎を解いてみろ！！」"
+				Localize("看板の文字：", "The sign says:"),
+				Localize("「脱出したければ、各店の謎を解いてみろ！！」", "\"If you want to escape, solve the mysteries in each shop!!\"")
 			);
-			yield return ShowDialogAndWait("脱出……？冗談、だよね……？", 2f);
-			yield return ShowDialogAndWait("……でも、\n戻り道が見えない。\n仕方ない、\n進むしかなさそうだ。");
+			yield return ShowDialogAndWait(Localize("脱出……？冗談、だよね……？", "Escape...? This is a joke, right...?"), 2f);
+			yield return ShowDialogAndWait(Localize("……でも、\n戻り道が見えない。\n仕方ない、\n進むしかなさそうだ。", "...But I can't see the way back.\nI guess I have no choice\nbut to keep going."));
 
 			_stageManager.EnterRoom(_roomIdBookshopEntrance);
-			yield return ShowDialogAndWait("本屋だけ、扉が開いてる……\nとりあえず、入ってみよう。");
+			yield return ShowDialogAndWait(Localize("本屋だけ、扉が開いてる……\nとりあえず、入ってみよう。", "Only the bookstore door is open...\nFor now, I'll go inside."));
 
 			_stageManager.EnterRoom(_roomIdBookshop);
-			yield return ShowDialogAndWait("……中は普通の本屋みたいだ。");
-			yield return ShowDialogAndWait("画面の端に矢印があるな。\n押すと、部屋を移動できそうだ。");
+			yield return ShowDialogAndWait(Localize("……中は普通の本屋みたいだ。", "...Inside looks like an ordinary bookstore."));
+			yield return ShowDialogAndWait(Localize("画面の端に矢印があるな。\n押すと、部屋を移動できそうだ。", "There are arrows at the edge of the screen.\nLooks like I can move between rooms by tapping them."));
 
 			_saveManager.SaveDataInstance.SetFlagNum(SaveData.SaveFlag.INTRO_SEQUENCE_DONE, 1);
 			_saveManager.Save();
@@ -324,14 +326,14 @@ namespace Story
 
 		private IEnumerator ShowMoveTutorial()
 		{
-			yield return ShowDialogAndWait("なるほど、\n場所が変わった。", 2f);
+			yield return ShowDialogAndWait(Localize("なるほど、\n場所が変わった。", "I see,\nthe location changed."), 2f);
 			_waitingForZoom = true;
 		}
 
 		private IEnumerator ShowZoomTutorial(int roomId)
 		{
-			yield return ShowDialogAndWait("気になるところを\nタップすると、\n拡大できるみたいだ。");
-			yield return ShowDialogAndWait("これでじっくり\n調べられるな！");
+			yield return ShowDialogAndWait(Localize("気になるところを\nタップすると、\n拡大できるみたいだ。", "It looks like if I tap something suspicious,\nI can zoom in on it."));
+			yield return ShowDialogAndWait(Localize("これでじっくり\n調べられるな！", "Now I can take a closer look!"));
 
 			if (roomId == _buttonPromptRoomId)
 			{
@@ -345,14 +347,14 @@ namespace Story
 
 		private IEnumerator ShowButtonTutorial()
 		{
-			yield return ShowDialogAndWait("ボタンがある……押したら、\n何か起こるかも？");
+			yield return ShowDialogAndWait(Localize("ボタンがある……押したら、\n何か起こるかも？", "There's a button...\nMaybe something will happen if I press it?"));
 		}
 
 		private IEnumerator ShowStageClearDialog()
 		{
 			yield return ShowDialogSequence(
-                "よし、扉が開いた！\n少しずつ進めば、\n外に出られるかもしれない。",
-                "今日は日本代表の試合があるんだ！！\n夜までには、絶対帰らないと！"
+				Localize("よし、扉が開いた！\n少しずつ進めば、\n外に出られるかもしれない。", "All right, the door opened!\nIf I keep making progress little by little,\nI might be able to get outside."),
+				Localize("今日は日本代表の試合があるんだ！！\n夜までには、絶対帰らないと！", "The Japan national team has a match today!!\nI have to get home before tonight, no matter what!")
 			);
 		}
 
@@ -366,9 +368,9 @@ namespace Story
 			_key4TutorialRunning = true;
 			SetInputEnabled(false);
 			yield return ShowDialogSequence(
-				"どうやら、いたるところにアイテムがあるらしい！",
-				"アイテムを使う時は、\n画面下のアイテム画像をクリックして\n枠が赤くなったら、\n使いたい場所をクリックすると使えそうだ！",
-				"この鍵をどこかで使えばいいのかな？"
+				Localize("どうやら、いたるところにアイテムがあるらしい！", "Looks like there are items hidden all over the place!"),
+				Localize("アイテムを使う時は、\n画面上のアイテム画像をクリックして\n枠が赤くなったら、\n使いたい場所をクリックすると使えそうだ！", "To use an item,\nclick the item icon at the top of the screen.\nWhen its frame turns red,\nclick where you want to use it."),
+				Localize("この鍵をどこかで使えばいいのかな？", "Maybe I should use this key somewhere?")
 			);
 			SetInputEnabled(true);
 
@@ -388,6 +390,17 @@ namespace Story
 			{
 				_roomUI.SetInputEnabled(isEnabled);
 			}
+		}
+
+		private string Localize(string japanese, string english)
+		{
+			if (_saveManager != null && _saveManager.SaveDataInstance != null &&
+				_saveManager.SaveDataInstance.GetLanguage() == SaveData.LANGUAGE.ENGLISH)
+			{
+				return english;
+			}
+
+			return japanese;
 		}
 
 		private IEnumerator ShowDialogAndWait(string text, float delayAfter = 0f)
@@ -411,7 +424,7 @@ namespace Story
 			}
 			if (delayAfter > 0f)
 			{
-				yield return new WaitForSeconds(delayAfter);
+				yield return new WaitForSecondsRealtime(delayAfter);
 			}
 		}
 
@@ -442,7 +455,7 @@ namespace Story
 			yield return FadeImage(_smokeOverlay, 0f, _smokeAlpha, _smokeFadeInSeconds);
 			if (_smokeHoldSeconds > 0f)
 			{
-				yield return new WaitForSeconds(_smokeHoldSeconds);
+				yield return new WaitForSecondsRealtime(_smokeHoldSeconds);
 			}
 			yield return FadeImage(_smokeOverlay, _smokeAlpha, 0f, _smokeFadeOutSeconds);
 			_smokeOverlay.gameObject.SetActive(false);
@@ -463,13 +476,13 @@ namespace Story
 			yield return FadeImage(_fadeOverlay, 0f, 1f, _fadeToWhiteSeconds);
 			if (_fadeWhiteHoldSeconds > 0f)
 			{
-				yield return new WaitForSeconds(_fadeWhiteHoldSeconds);
+				yield return new WaitForSecondsRealtime(_fadeWhiteHoldSeconds);
 			}
 
 			yield return FadeColor(_fadeOverlay, Color.white, Color.black, _fadeToBlackSeconds);
 			if (_fadeBlackHoldSeconds > 0f)
 			{
-				yield return new WaitForSeconds(_fadeBlackHoldSeconds);
+				yield return new WaitForSecondsRealtime(_fadeBlackHoldSeconds);
 			}
 			yield return FadeImage(_fadeOverlay, 1f, 0f, _fadeOutSeconds);
 			_fadeOverlay.gameObject.SetActive(false);
@@ -497,7 +510,7 @@ namespace Story
 
 			while (elapsed < duration)
 			{
-				elapsed += Time.deltaTime;
+				elapsed += Time.unscaledDeltaTime;
 				var t = Mathf.Clamp01(elapsed / duration);
 				var color = image.color;
 				color.a = Mathf.Lerp(fromAlpha, toAlpha, t);
@@ -526,7 +539,7 @@ namespace Story
 
 			while (elapsed < duration)
 			{
-				elapsed += Time.deltaTime;
+				elapsed += Time.unscaledDeltaTime;
 				var t = Mathf.Clamp01(elapsed / duration);
 				image.color = Color.Lerp(from, to, t);
 				yield return null;

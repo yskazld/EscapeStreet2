@@ -214,7 +214,7 @@ namespace UI.Dialog
 				yield break;
 			}
 
-			var wait = (_secondsPerChar > 0f) ? new WaitForSeconds(_secondsPerChar) : null;
+			var wait = (_secondsPerChar > 0f) ? new WaitForSecondsRealtime(_secondsPerChar) : null;
 			for (int i = 0; i < text.Length; i++)
 			{
 				_dialogText.text += text[i];

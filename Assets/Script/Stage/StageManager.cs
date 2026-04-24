@@ -165,6 +165,10 @@ namespace Stage
 				if (IsClearFlag(flag))
 				{
 					_clearFlagCandidates.Add(flag);
+					if (_saveData.GetFlagNum(flag) > 0)
+					{
+						_alreadyNotifiedClearFlags.Add(flag);
+					}
 				}
 			}
 
@@ -493,7 +497,7 @@ namespace Stage
 
 			if (delaySeconds > 0f)
 			{
-				yield return new WaitForSeconds(delaySeconds);
+				yield return new WaitForSecondsRealtime(delaySeconds);
 			}
 
 			targetRoom.SettingTouch(_inputEnabled);
@@ -512,7 +516,7 @@ namespace Stage
 				var elapsed = 0f;
 				while (elapsed < moveSeconds)
 				{
-					elapsed += Time.deltaTime;
+					elapsed += Time.unscaledDeltaTime;
 					var t = Mathf.Clamp01(elapsed / moveSeconds);
 					_rectTransform.localPosition = Vector2.Lerp(startPos, targetPos, t);
 					yield return null;

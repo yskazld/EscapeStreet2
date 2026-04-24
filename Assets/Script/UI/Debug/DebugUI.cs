@@ -84,7 +84,9 @@ namespace UI.Debug
 					return;
 				}
 				var nowLanguage = save.SaveDataInstance.GetLanguage();
-				_languageText.text = nowLanguage.ToString();
+				_languageText.text = nowLanguage == Save.SaveData.LANGUAGE.ENGLISH
+					? "ENG\nLISH"
+					: nowLanguage.ToString();
 			}
 
 			private void SetupStageJumpUI()

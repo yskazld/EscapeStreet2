@@ -43,8 +43,10 @@ namespace Story
 
 		[SerializeField] private bool _useAfterglowLine;
 		[SerializeField] private string _afterglowLine = "霧なんて、もうこりごりだ……！";
+		[SerializeField] private string _afterglowLineEnglish = "I've had more than enough of this fog...!";
 
 		[SerializeField] private string _clearSubtitle = "日本代表戦、間に合う！今日は勝つぞ！！\n帰ったら、おかあさんにも不思議な体験を説明しないと……！";
+		[SerializeField] private string _clearSubtitleEnglish = "I'll make it in time for the Japan match! We're going to win today!!\nWhen I get home, I need to tell Mom about this strange experience too...!";
 		[SerializeField] private float _gameClearFontSize = 90f;
 		[SerializeField] private bool _gameClearAutoSize;
 
@@ -148,7 +150,7 @@ namespace Story
 			{
 				PlaySe(_doorOpenSe, _doorSeVolume);
 			}
-			yield return ShowDialogAndWait("……これで最後のはず！");
+			yield return ShowDialogAndWait(Localize("……これで最後のはず！", "...This should be the last one!"));
 
 			if (_stageManager != null)
 			{
@@ -160,14 +162,14 @@ namespace Story
 				BGMManager.Instance.Play(_endingBgmIndex, _endingBgmFadeSeconds);
 			}
 
-			yield return ShowDialogAndWait("やっと……出られた！！");
+			yield return ShowDialogAndWait(Localize("やっと……出られた！！", "Finally... I'm out!!"));
 
 			if (_playClockSe)
 			{
 				PlaySe(_clockSe, _clockSeVolume);
 			}
-			yield return ShowDialogAndWait("時計を見てみよう！\n……まだ17:30だ！");
-			yield return ShowDialogAndWait("今から帰れば、サッカーの試合間に合う！！");
+			yield return ShowDialogAndWait(Localize("時計を見てみよう！\n……まだ17:30だ！", "Let me check the clock!\n...It's only 5:30 PM!"));
+			yield return ShowDialogAndWait(Localize("今から帰れば、サッカーの試合間に合う！！", "If I head home now, I'll make it in time for the soccer match!!"));
 
 			if (_playRunSe)
 			{
@@ -177,11 +179,11 @@ namespace Story
 
 			if (_useAfterglowLine && !string.IsNullOrEmpty(_afterglowLine))
 			{
-				yield return ShowDialogAndWait(_afterglowLine);
+				yield return ShowDialogAndWait(Localize(_afterglowLine, _afterglowLineEnglish));
 			}
 
-			yield return ShowDialogAndWait(_clearSubtitle);
-			yield return ShowDialogAndWaitWithFontSize("GAME\nCLEAR！！", _gameClearFontSize, _gameClearAutoSize);
+			yield return ShowDialogAndWait(Localize(_clearSubtitle, _clearSubtitleEnglish));
+			yield return ShowDialogAndWaitWithFontSize(Localize("GAME\nCLEAR！！", "GAME\nCLEAR!!"), _gameClearFontSize, _gameClearAutoSize);
 
 			SceneManager.LoadScene("title");
 
@@ -212,6 +214,17 @@ namespace Story
 			soundManager.Play(se, 1f, volume);
 		}
 
+		private string Localize(string japanese, string english)
+		{
+			if (_saveManager != null && _saveManager.SaveDataInstance != null &&
+				_saveManager.SaveDataInstance.GetLanguage() == SaveData.LANGUAGE.ENGLISH)
+			{
+				return english;
+			}
+
+			return japanese;
+		}
+
 		private IEnumerator ShowDialogAndWait(string text, float delayAfter = 0f)
 		{
 			if (_dialogManager == null)
@@ -233,7 +246,7 @@ namespace Story
 			}
 			if (delayAfter > 0f)
 			{
-				yield return new WaitForSeconds(delayAfter);
+				yield return new WaitForSecondsRealtime(delayAfter);
 			}
 		}
 
@@ -333,7 +346,7 @@ namespace Story
 
 			while (elapsed < duration)
 			{
-				elapsed += Time.deltaTime;
+				elapsed += Time.unscaledDeltaTime;
 				var t = Mathf.Clamp01(elapsed / duration);
 				var color = baseColor;
 				color.a = Mathf.Lerp(fromAlpha, toAlpha, t);
